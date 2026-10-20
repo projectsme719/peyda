@@ -1,0 +1,5 @@
+{
+  "name": "peyda",
+  "private": true,
+  "devDependencies": { "@tgcloud/cli": "^0.2.0" }
+}
