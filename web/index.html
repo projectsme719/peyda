@@ -1,33 +1,466 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>پیدا</title>
-  <script src="https://telegram.org/js/telegram-web-app.js?64"></script>
-  <style>
-    body { margin:0; font-family: system-ui, sans-serif; background:#F3F4F6; color:#1F2937; display:grid; place-items:center; min-height:100vh; }
-    .card { background:#fff; border-radius:16px; padding:24px; width:min(90vw,360px); text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.08); }
-    h1 { color:#006644; margin:0 0 8px; }
-    .ok { color:#00B894; font-weight:700; }
-    .err { color:#c0392b; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>پیدا | PEYDA</title>
+<script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#00B894;--gd:#006644;--gl:#A7E22E;--ink:#1F2937;--mute:#6B7280;--bg:#F3F4F6;--card:#fff;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Vazirmatn','IRANSans',system-ui,sans-serif;font-size:14px}
+button,input,select,a{font-family:inherit;font-size:inherit}
+.hidden{display:none!important}
+.top{background:linear-gradient(135deg,var(--gd),#00805a);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 18px;border-radius:0 0 24px 24px}
+.row{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;line-height:1.1}
+.logo small{display:block;font-size:9px;letter-spacing:3px;opacity:.8;font-weight:500}
+.pill{margin-inline-start:auto;background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:99px;padding:8px 12px}
+.slogan{margin:14px 0 10px;font-weight:700}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;border:0;border-radius:12px;padding:12px 14px;outline:none}
+.search button{border:0;border-radius:12px;background:var(--gl);color:var(--gd);font-weight:700;padding:0 14px}
+.filterbtn{background:rgba(255,255,255,.18)!important;color:#fff!important}
+main{padding:14px 14px 100px}
+main.pt{padding-top:calc(env(safe-area-inset-top,0px) + 56px)}
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.cat{background:var(--card);border-radius:14px;padding:10px 2px;text-align:center;font-size:10.5px;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,.06);border:0;color:var(--ink)}
+.cat .i{display:block;font-size:22px;margin-bottom:2px}
+.cat.on{outline:2px solid var(--g)}
+.cats.big{grid-template-columns:repeat(2,1fr)}
+.cats.big .cat{font-size:14px;padding:18px 8px}
+.cats.big .cat .i{font-size:32px}
+h2{font-size:15px;margin:6px 2px 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ph{aspect-ratio:4/3;background:#e5e7eb center/cover no-repeat;display:grid;place-items:center;color:#9ca3af;font-size:28px}
+.cb{padding:8px 10px 10px}
+.cb h3{margin:0 0 4px;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pr{color:var(--gd);font-weight:800;font-size:13px}
+.pr.big{font-size:18px;margin:6px 0}
+.mt{color:var(--mute);font-size:11px;margin-top:4px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chip{background:#d1fae5;color:var(--gd);border-radius:99px;padding:4px 10px;font-size:12px;border:0}
+.more{display:block;margin:14px auto 0;background:var(--g);color:#fff;border:0;border-radius:12px;padding:10px 24px;font-weight:700}
+.empty{text-align:center;color:var(--mute);padding:40px 0}
+nav{position:fixed;inset-inline:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);background:#fff;border-radius:24px;box-shadow:0 6px 24px rgba(0,0,0,.15);display:flex;justify-content:space-around;align-items:center;padding:6px;z-index:10}
+nav button{flex:1;background:none;border:0;color:var(--mute);font-size:10px;padding:6px 0}
+nav button span{display:block;font-size:20px}
+nav button.on{color:var(--g);font-weight:700}
+nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#fff;font-size:28px;margin-top:-22px;box-shadow:0 6px 16px rgba(0,184,148,.45);padding:0}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:flex;align-items:flex-end}
+.sheet .box{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px);max-height:85vh;overflow:auto}
+.sheet label{display:block;margin:0 0 10px;color:var(--mute);font-size:12px}
+.sheet select,.sheet input{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:block;text-align:center;text-decoration:none;border:0;background:var(--g);color:#fff;border-radius:12px;padding:12px;font-weight:700;margin-top:8px;width:100%}
+.btn.alt{background:#fff;color:var(--gd);border:1.5px solid var(--g)}
+.detail{position:fixed;inset:0;background:var(--bg);overflow:auto;z-index:20}
+.slider{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;direction:ltr;background:#e5e7eb}
+.slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;background:#e5e7eb center/contain no-repeat;display:grid;place-items:center;color:#9ca3af;font-size:40px}
+.dots{text-align:center;color:var(--mute);font-size:12px;margin-top:6px}
+.dbody{padding:14px 14px 40px}
+.dbody h1{font-size:17px;line-height:1.7;margin:0;flex:1}
+.icon{border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.desc{white-space:pre-wrap;line-height:1.9;margin:0}
+.note,.warn{background:#fff7d6;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:12.5px;line-height:1.8}
+.x{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);inset-inline-start:10px;z-index:25;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:50%;width:36px;height:36px;font-size:16px}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#1F2937;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:88vw;text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.me{background:#fff;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>پیدا | PEYDA</h1>
-    <p id="msg">در حال اتصال…</p>
-  </div>
-  <script>
-    var tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    tg.Serverless.call('ping', {}, function (err, res) {
-      var el = document.getElementById('msg');
-      if (err) { el.className = 'err'; el.textContent = 'خطا: ' + err.message + ' (' + (err.type || err.status) + ')'; return; }
-      el.className = 'ok';
-      el.textContent = 'سلام ' + res.name + '! متصل به دیتابیس پیدا ✅ — آگهی فعال: ' + res.activeAds;
+<div id="view"></div>
+<nav id="nav">
+  <button data-tab="home"><span>🏠</span>خانه</button>
+  <button data-tab="cats"><span>🗂</span>دسته‌ها</button>
+  <button class="fab" id="fab">＋</button>
+  <button data-tab="saved"><span>⭐</span>نشان‌شده</button>
+  <button data-tab="me"><span>👤</span>من</button>
+</nav>
+<div id="sheet" class="sheet hidden"></div>
+<div id="detail" class="detail hidden"></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  var tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  try { tg.setHeaderColor('#006644'); tg.setBackgroundColor('#F3F4F6'); tg.setBottomBarColor('#FFFFFF'); } catch (e) {}
+
+  const CATS = [
+    { k: 'realestate', i: '🏠', n: 'خانه و املاک' },
+    { k: 'vehicles', i: '🚗', n: 'موتر' },
+    { k: 'mobile', i: '📱', n: 'موبایل و تبلت' },
+    { k: 'computer', i: '💻', n: 'کامپیوتر و لوازم جانبی' },
+    { k: 'home', i: '🛋', n: 'لوازم خانگی و آشپزخانه' },
+    { k: 'jobs', i: '💼', n: 'استخدام و کار' },
+    { k: 'services', i: '🤝', n: 'خدمات' },
+    { k: 'fashion', i: '👕', n: 'لباس و مد' },
+    { k: 'pets', i: '🐾', n: 'حیوانات خانگی' },
+    { k: 'other', i: '🔖', n: 'سایر موارد' },
+  ];
+  const PROVS = ['کابل','هرات','بلخ','قندهار','ننگرهار','کندز','بغلان','غزنی','پروان','کاپیسا','پنجشیر','بامیان','دایکندی','غور','هلمند','جوزجان','سرپل','فاریاب','بادغیس','نیمروز','فراه','زابل','ارزگان','پکتیا','پکتیکا','خوست','کنر','لغمان','لوگر','میدان وردک','نورستان','سمنگان','تخار','بدخشان'];
+  const SORTS = { new: 'جدیدترین', cheap: 'ارزان‌ترین', exp: 'گران‌ترین', views: 'پربازدیدترین' };
+  const BOT = 'PEYDA_YaarBot';
+
+  const $ = (s) => document.querySelector(s);
+  const view = $('#view');
+  const sheet = $('#sheet');
+  const detail = $('#detail');
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fa = (s) => String(s).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  const latin = (s) => String(s).replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g, '');
+  const money = (p) => (p == null ? 'توافقی' : fa(String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) + ' افغانی');
+  const loc = (a) => [a.province, a.city].filter(Boolean).join('، ') || '—';
+  const catLabel = (k) => { const c = CATS.find((x) => x.k === k); return c ? c.i + ' ' + c.n : ''; };
+  const ago = (t) => {
+    if (!t) return '';
+    const s = Math.max(0, Math.floor(Date.now() / 1000) - t);
+    if (s < 60) return 'همین الان';
+    if (s < 3600) return fa(Math.floor(s / 60)) + ' دقیقه پیش';
+    if (s < 86400) return fa(Math.floor(s / 3600)) + ' ساعت پیش';
+    return fa(Math.floor(s / 86400)) + ' روز پیش';
+  };
+  const waNum = (c) => {
+    let d = String(c).replace(/\D/g, '');
+    if (d.indexOf('00') === 0) d = d.slice(2);
+    else if (d[0] === '0') d = '93' + d.slice(1);
+    else if (d.length === 9 && d[0] === '7') d = '93' + d;
+    return d.length >= 10 ? d : '';
+  };
+
+  let tt;
+  function toast(m) {
+    const t = $('#toast');
+    t.textContent = m;
+    t.classList.add('on');
+    clearTimeout(tt);
+    tt = setTimeout(() => t.classList.remove('on'), 2600);
+  }
+
+  const call = (name, input) => new Promise((resolve, reject) => {
+    tg.Serverless.call(name, input || {}, (err, data) => (err ? reject(err) : resolve(data)));
+  });
+
+  // ---------- وضعیت ----------
+  let savedF = {};
+  try { savedF = JSON.parse(localStorage.getItem('peyda_f') || '{}'); } catch (e) {}
+  const F = { q: '', category: '', province: savedF.province || '', minPrice: '', maxPrice: '', sort: 'new' };
+  const S = { tab: 'home', page: 1, pages: 1, total: 0, items: [], req: 0 };
+  const SV = { page: 1, pages: 1, items: [], req: 0 };
+
+  // ---------- عکس‌ها (صف و بارگذاری تنبل) ----------
+  const imgCache = new Map();
+  const queue = [];
+  let active = 0;
+  function pump() {
+    while (active < 3 && queue.length) {
+      const t = queue.shift();
+      active++;
+      call('photo', { id: Number(t.id), i: Number(t.i) })
+        .then((d) => t.res(d.src))
+        .catch(t.rej)
+        .finally(() => { active--; pump(); });
+    }
+  }
+  function fetchPhoto(id, i) {
+    const k = id + ':' + i;
+    if (imgCache.has(k)) return imgCache.get(k);
+    const p = new Promise((res, rej) => { queue.push({ id, i, res, rej }); pump(); });
+    imgCache.set(k, p);
+    p.catch(() => imgCache.delete(k));
+    return p;
+  }
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target);
+    const el = e.target;
+    fetchPhoto(el.dataset.id, el.dataset.i)
+      .then((src) => { el.style.backgroundImage = 'url("' + src + '")'; el.textContent = ''; })
+      .catch(() => { el.textContent = '🖼'; });
+  }), { rootMargin: '300px 600px' });
+  const observe = (root) => root.querySelectorAll('[data-lazy]').forEach((el) => io.observe(el));
+
+  // ---------- کارت آگهی ----------
+  function cardHtml(a) {
+    const img = a.photos > 0
+      ? '<div class="ph" data-lazy data-id="' + a.id + '" data-i="0"></div>'
+      : '<div class="ph">🖼</div>';
+    return '<article class="card" data-open="' + a.id + '">' + img +
+      '<div class="cb"><h3>' + esc(a.title) + '</h3><div class="pr">' + money(a.price) + '</div>' +
+      '<div class="mt">' + esc(loc(a)) + ' • ' + ago(a.created) + '</div>' +
+      (a.note ? '<div class="mt">📝 ' + esc(a.note) + '</div>' : '') + '</div></article>';
+  }
+
+  // ---------- فیلترها ----------
+  function chipsHtml() {
+    const c = [];
+    if (F.q) c.push(['q', '«' + F.q + '»']);
+    if (F.category) c.push(['category', catLabel(F.category)]);
+    if (F.province) c.push(['province', '📍 ' + F.province]);
+    if (F.minPrice || F.maxPrice) c.push(['price', '💰 ' + (F.minPrice ? 'از ' + money(F.minPrice) : '') + ' ' + (F.maxPrice ? 'تا ' + money(F.maxPrice) : '')]);
+    if (F.sort !== 'new') c.push(['sort', '↕️ ' + SORTS[F.sort]]);
+    return c.map((x) => '<button class="chip" data-rm="' + x[0] + '">' + esc(x[1]) + ' ✕</button>').join('');
+  }
+  const hasFilters = () => !!(F.q || F.category || F.province || F.minPrice || F.maxPrice || F.sort !== 'new');
+
+  // ---------- خانه ----------
+  function renderHome() {
+    view.innerHTML =
+      '<header class="top"><div class="row"><div class="logo">' +
+      '<svg width="34" height="34" viewBox="0 0 48 48"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A7E22E"/><stop offset="1" stop-color="#00B894"/></linearGradient></defs><path d="M24 3C14.6 3 7 10.4 7 19.6 7 31 24 45 24 45s17-14 17-25.4C41 10.4 33.4 3 24 3z" fill="url(#lg)"/><circle cx="24" cy="19" r="7.5" fill="#006644"/></svg>' +
+      '<div>پیدا<small>PEYDA</small></div></div>' +
+      '<button class="pill" data-act="filter">📍 ' + esc(F.province || 'همه ولایت‌ها') + '</button></div>' +
+      '<div class="slogan">«هرچه می‌خواهی، پیدا کن!»</div>' +
+      '<div class="search"><input id="q" placeholder="جستجو در آگهی‌ها…" enterkeyhint="search" value="' + esc(F.q) + '">' +
+      '<button data-act="goq">جستجو</button><button class="filterbtn" data-act="filter">⚙️</button></div></header>' +
+      '<main><div class="cats">' + CATS.map((c) => '<button class="cat ' + (F.category === c.k ? 'on' : '') + '" data-cat="' + c.k + '"><span class="i">' + c.i + '</span>' + esc(c.n) + '</button>').join('') + '</div>' +
+      '<div class="chips" id="chips">' + chipsHtml() + '</div>' +
+      '<h2 id="lt">آخرین آگهی‌ها</h2><div id="list" class="grid"></div><div id="more"></div></main>';
+    const qi = $('#q');
+    qi.addEventListener('input', () => { F.q = qi.value.trim(); });
+    qi.addEventListener('keydown', (e) => { if (e.key === 'Enter') { qi.blur(); S.tab = 'home'; render(); } });
+    loadList(true);
+  }
+
+  async function loadList(reset) {
+    const my = ++S.req;
+    if (reset) {
+      S.page = 1;
+      S.items = [];
+      const l = $('#list');
+      if (l) l.innerHTML = '<div class="empty" style="grid-column:1/-1">در حال بارگذاری…</div>';
+    }
+    try {
+      const r = await call('ads', Object.assign({}, F, { page: S.page }));
+      if (my !== S.req) return;
+      S.items = reset ? r.items : S.items.concat(r.items);
+      S.page = r.page;
+      S.pages = r.pages;
+      S.total = r.total;
+      paintList();
+    } catch (e) {
+      if (my === S.req) toast(e.message || 'خطا در بارگذاری');
+    }
+  }
+
+  function paintList() {
+    const l = $('#list');
+    if (!l) return;
+    l.innerHTML = S.items.length ? S.items.map(cardHtml).join('') : '<div class="empty" style="grid-column:1/-1">آگهی‌ای پیدا نشد 😕</div>';
+    const m = $('#more');
+    if (m) m.innerHTML = S.page < S.pages ? '<button class="more" data-more="1">نمایش بیشتر</button>' : '';
+    const lt = $('#lt');
+    if (lt) lt.textContent = (hasFilters() ? 'نتایج جستجو' : 'آخرین آگهی‌ها') + ' (' + fa(S.total) + ')';
+    observe(l);
+  }
+
+  // ---------- دسته‌ها ----------
+  function renderCats() {
+    view.innerHTML = '<main class="pt"><h2>🗂 دسته‌بندی‌ها</h2><div class="cats big">' +
+      CATS.map((c) => '<button class="cat" data-cat="' + c.k + '"><span class="i">' + c.i + '</span>' + esc(c.n) + '</button>').join('') + '</div></main>';
+  }
+
+  // ---------- نشان‌شده‌ها ----------
+  function renderSaved() {
+    view.innerHTML = '<main class="pt"><h2>⭐ نشان‌شده‌ها</h2><div id="slist" class="grid"></div><div id="smore"></div></main>';
+    loadSaved(true);
+  }
+  async function loadSaved(reset) {
+    const my = ++SV.req;
+    if (reset) { SV.page = 1; SV.items = []; }
+    try {
+      const r = await call('bookmarks', { page: SV.page });
+      if (my !== SV.req) return;
+      SV.items = reset ? r.items : SV.items.concat(r.items);
+      SV.page = r.page;
+      SV.pages = r.pages;
+      const l = $('#slist');
+      if (!l) return;
+      l.innerHTML = SV.items.length ? SV.items.map(cardHtml).join('') : '<div class="empty" style="grid-column:1/-1">هنوز آگهی‌ای را نشان نکرده‌اید.<br>در صفحه هر آگهی روی ☆ بزنید.</div>';
+      const m = $('#smore');
+      if (m) m.innerHTML = SV.page < SV.pages ? '<button class="more" data-smore="1">نمایش بیشتر</button>' : '';
+      observe(l);
+    } catch (e) {
+      if (my === SV.req) toast(e.message || 'خطا');
+    }
+  }
+
+  // ---------- من ----------
+  function renderMe() {
+    const u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+    view.innerHTML = '<main class="pt"><div class="me"><div style="font-size:44px">👤</div><h2>' +
+      esc([u.first_name, u.last_name].filter(Boolean).join(' ') || 'کاربر پیدا') + '</h2>' +
+      (u.username ? '<div class="mt">@' + esc(u.username) + '</div>' : '') + '</div>' +
+      '<button class="btn" data-act="bot">🤖 باز کردن ربات (آگهی‌های من)</button>' +
+      '<button class="btn alt" data-act="channel">📢 کانال پیدا</button></main>';
+  }
+
+  // ---------- صفحه آگهی ----------
+  function contactBtns(c) {
+    if (!c) return '';
+    if (c[0] === '@') return '<button class="btn" data-tg="' + esc(c.slice(1)) + '">✈️ پیام در تلگرام</button>';
+    const wa = waNum(c);
+    return (wa ? '<button class="btn" data-wa="' + wa + '">💬 واتساپ</button>' : '') +
+      '<a class="btn alt" href="tel:' + esc(c) + '">📞 تماس تلفنی (' + esc(fa(c)) + ')</a>';
+  }
+
+  function syncBack() {
+    const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden');
+    if (open) tg.BackButton.show(); else tg.BackButton.hide();
+  }
+
+  async function openAd(id) {
+    detail.classList.remove('hidden');
+    detail.innerHTML = '<button class="x" data-act="closead">✕</button><div class="empty">در حال بارگذاری…</div>';
+    detail.scrollTop = 0;
+    syncBack();
+    try {
+      paintDetail(await call('ad', { id: id }));
+    } catch (e) {
+      toast(e.message || 'خطا');
+      closeAd();
+    }
+  }
+  function closeAd() {
+    detail.classList.add('hidden');
+    detail.innerHTML = '';
+    syncBack();
+  }
+
+  function paintDetail(a) {
+    let slides;
+    if (a.photos) {
+      slides = '<div class="slider" id="sl">' +
+        Array.from({ length: a.photos }, (_, i) => '<div class="slide" data-lazy data-id="' + a.id + '" data-i="' + i + '"></div>').join('') + '</div>' +
+        (a.photos > 1 ? '<div class="dots" id="dots">' + fa(1) + ' / ' + fa(a.photos) + '</div>' : '');
+    } else {
+      slides = '<div class="slide">🖼</div>';
+    }
+    detail.innerHTML =
+      '<button class="x" data-act="closead">✕</button>' + slides +
+      '<div class="dbody"><div class="row"><h1>' + esc(a.title) + '</h1>' +
+      (a.owner ? '' : '<button class="icon" id="bm" data-bm="' + a.id + '">' + (a.bookmarked ? '⭐' : '☆') + '</button>') + '</div>' +
+      '<div class="pr big">' + money(a.price) + '</div>' +
+      '<div class="mt">📍 ' + esc(loc(a)) + ' • ' + ago(a.created) + ' • 👁 ' + fa(a.views) + '</div>' +
+      '<div class="mt">' + catLabel(a.category) + '</div>' +
+      (a.status !== 'active' ? '<div class="warn">وضعیت آگهی: ' + esc(a.status) + '</div>' : '') +
+      '<h2 style="margin-top:14px">توضیحات</h2><p class="desc">' + esc(a.description) + '</p>' +
+      (a.note ? '<div class="note">📝 ' + esc(a.note) + '</div>' : '') +
+      (a.owner ? '<div class="note">این آگهی شماست. مدیریت آگهی (ویرایش، فروخته شد، حذف) فعلاً از ربات: «📋 آگهی‌های من» انجام می‌شود.</div>' : contactBtns(a.contact)) +
+      '<button class="btn alt" data-share="' + a.id + '" data-t="' + esc(a.title) + '">🔗 اشتراک‌گذاری</button></div>';
+    observe(detail);
+    const sl = $('#sl');
+    if (sl) sl.addEventListener('scroll', () => {
+      const i = Math.round(Math.abs(sl.scrollLeft) / (sl.clientWidth || 1));
+      const d = $('#dots');
+      if (d) d.textContent = fa(i + 1) + ' / ' + fa(a.photos);
     });
-  </script>
+  }
+
+  async function toggleBm(id) {
+    try {
+      const r = await call('toggleBookmark', { id: id });
+      const b = $('#bm');
+      if (b) b.textContent = r.bookmarked ? '⭐' : '☆';
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    } catch (e) {
+      toast(e.message || 'خطا');
+    }
+  }
+
+  // ---------- برگه فیلتر ----------
+  function openSheet() {
+    sheet.innerHTML = '<div class="box"><h2>⚙️ فیلترها</h2>' +
+      '<label>دسته‌بندی<select id="f_cat"><option value="">همه</option>' + CATS.map((c) => '<option value="' + c.k + '"' + (F.category === c.k ? ' selected' : '') + '>' + c.i + ' ' + esc(c.n) + '</option>').join('') + '</select></label>' +
+      '<label>ولایت<select id="f_prov"><option value="">همه</option>' + PROVS.map((p) => '<option' + (F.province === p ? ' selected' : '') + '>' + p + '</option>').join('') + '</select></label>' +
+      '<div class="two"><label>حداقل قیمت (افغانی)<input id="f_min" inputmode="numeric" value="' + esc(F.minPrice) + '"></label>' +
+      '<label>حداکثر قیمت (افغانی)<input id="f_max" inputmode="numeric" value="' + esc(F.maxPrice) + '"></label></div>' +
+      '<label>مرتب‌سازی<select id="f_sort">' + Object.keys(SORTS).map((k) => '<option value="' + k + '"' + (F.sort === k ? ' selected' : '') + '>' + SORTS[k] + '</option>').join('') + '</select></label>' +
+      '<div class="two"><button class="btn" data-act="apply">اعمال</button><button class="btn alt" data-act="clear">پاک‌کردن</button></div></div>';
+    sheet.classList.remove('hidden');
+    syncBack();
+  }
+  function closeSheet() { sheet.classList.add('hidden'); sheet.innerHTML = ''; syncBack(); }
+
+  // ---------- رندر ----------
+  function render() {
+    document.querySelectorAll('#nav [data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === S.tab));
+    window.scrollTo(0, 0);
+    if (S.tab === 'home') renderHome();
+    else if (S.tab === 'cats') renderCats();
+    else if (S.tab === 'saved') renderSaved();
+    else renderMe();
+  }
+
+  // ---------- رویدادها ----------
+  document.addEventListener('click', (e) => {
+    if (e.target === sheet) { closeSheet(); return; }
+    if (e.target.id === 'fab') { tg.showAlert('ثبت آگهی از داخل مینی‌اپ به‌زودی فعال می‌شود. فعلاً از ربات استفاده کنید 🙏'); return; }
+    const t = e.target.closest('[data-open],[data-cat],[data-tab],[data-bm],[data-share],[data-tg],[data-wa],[data-more],[data-smore],[data-rm],[data-act]');
+    if (!t) return;
+    const d = t.dataset;
+    if (d.open) { openAd(Number(d.open)); return; }
+    if (d.cat) { F.category = F.category === d.cat && S.tab === 'home' ? '' : d.cat; S.tab = 'home'; render(); return; }
+    if (d.tab) { S.tab = d.tab; render(); return; }
+    if (d.bm) { toggleBm(Number(d.bm)); return; }
+    if (d.share) {
+      const link = 'https://t.me/' + BOT + '?start=ad_' + d.share;
+      tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(d.t || ''));
+      return;
+    }
+    if (d.tg) { tg.openTelegramLink('https://t.me/' + d.tg); return; }
+    if (d.wa) { tg.openLink('https://wa.me/' + d.wa); return; }
+    if (d.more) { S.page += 1; loadList(false); return; }
+    if (d.smore) { SV.page += 1; loadSaved(false); return; }
+    if (d.rm) {
+      if (d.rm === 'price') { F.minPrice = ''; F.maxPrice = ''; }
+      else if (d.rm === 'sort') F.sort = 'new';
+      else F[d.rm] = '';
+      render();
+      return;
+    }
+    switch (d.act) {
+      case 'goq': S.tab = 'home'; render(); break;
+      case 'filter': openSheet(); break;
+      case 'apply':
+        F.category = $('#f_cat').value;
+        F.province = $('#f_prov').value;
+        F.minPrice = latin($('#f_min').value);
+        F.maxPrice = latin($('#f_max').value);
+        F.sort = $('#f_sort').value;
+        try { localStorage.setItem('peyda_f', JSON.stringify({ province: F.province })); } catch (err) {}
+        closeSheet();
+        S.tab = 'home';
+        render();
+        break;
+      case 'clear':
+        F.q = ''; F.category = ''; F.province = ''; F.minPrice = ''; F.maxPrice = ''; F.sort = 'new';
+        try { localStorage.setItem('peyda_f', '{}'); } catch (err) {}
+        closeSheet();
+        S.tab = 'home';
+        render();
+        break;
+      case 'closead': closeAd(); break;
+      case 'bot': tg.openTelegramLink('https://t.me/' + BOT); break;
+      case 'channel': tg.openTelegramLink('https://t.me/PeydaAds'); break;
+    }
+  });
+
+  tg.BackButton.onClick(() => {
+    if (!sheet.classList.contains('hidden')) closeSheet();
+    else closeAd();
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
