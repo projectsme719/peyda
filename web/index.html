@@ -12,7 +12,7 @@
 :root{--g:#00B894;--gd:#006644;--gl:#A7E22E;--ink:#1F2937;--mute:#6B7280;--bg:#F3F4F6;--card:#fff;--r:16px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Vazirmatn','IRANSans',system-ui,sans-serif;font-size:14px}
-button,input,select,a{font-family:inherit;font-size:inherit}
+button,input,select,textarea,a{font-family:inherit;font-size:inherit}
 .hidden{display:none!important}
 .top{background:linear-gradient(135deg,var(--gd),#00805a);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 18px;border-radius:0 0 24px 24px}
 .row{display:flex;align-items:center;gap:10px}
@@ -53,16 +53,20 @@ nav button.on{color:var(--g);font-weight:700}
 nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#fff;font-size:28px;margin-top:-22px;box-shadow:0 6px 16px rgba(0,184,148,.45);padding:0}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:flex;align-items:flex-end}
 .sheet .box{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px);max-height:85vh;overflow:auto}
-.sheet label{display:block;margin:0 0 10px;color:var(--mute);font-size:12px}
-.sheet select,.sheet input{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;color:var(--ink)}
+.sheet label,.form label{display:block;margin:0 0 12px;color:var(--mute);font-size:12px}
+.sheet select,.sheet input,.form select,.form input:not([type=checkbox]),.form textarea{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;color:var(--ink)}
+.form label.chk{display:flex;align-items:center;gap:8px;color:var(--ink)}
+.form label.chk input{width:auto;margin:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{display:block;text-align:center;text-decoration:none;border:0;background:var(--g);color:#fff;border-radius:12px;padding:12px;font-weight:700;margin-top:8px;width:100%}
 .btn.alt{background:#fff;color:var(--gd);border:1.5px solid var(--g)}
+.btn:disabled{opacity:.6}
 .detail{position:fixed;inset:0;background:var(--bg);overflow:auto;z-index:20}
 .slider{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;direction:ltr;background:#e5e7eb}
 .slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;background:#e5e7eb center/contain no-repeat;display:grid;place-items:center;color:#9ca3af;font-size:40px}
 .dots{text-align:center;color:var(--mute);font-size:12px;margin-top:6px}
 .dbody{padding:14px 14px 40px}
+.dbody.comp{padding-top:calc(env(safe-area-inset-top,0px) + 56px)}
 .dbody h1{font-size:17px;line-height:1.7;margin:0;flex:1}
 .icon{border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .desc{white-space:pre-wrap;line-height:1.9;margin:0}
@@ -71,6 +75,12 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#1F2937;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:88vw;text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%)}
 .me{background:#fff;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.th{position:relative;width:72px;height:72px;border-radius:12px;background:#e5e7eb center/cover no-repeat}
+.th b{position:absolute;top:-6px;inset-inline-end:-6px;width:22px;height:22px;border-radius:50%;background:#c0392b;color:#fff;font-size:11px;display:grid;place-items:center}
+.addph{width:72px;height:72px;border:2px dashed var(--g);border-radius:12px;display:grid;place-items:center;color:var(--g);font-size:26px;background:#fff}
+.act{display:flex;flex-wrap:wrap;gap:6px;padding-top:0}
+.mini{border:0;border-radius:10px;padding:6px 8px;background:#eef2f7;color:var(--ink);font-size:11px}
 </style>
 </head>
 <body>
@@ -83,12 +93,18 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   <button data-tab="me"><span>👤</span>من</button>
 </nav>
 <div id="sheet" class="sheet hidden"></div>
+<div id="composer" class="detail hidden"></div>
 <div id="detail" class="detail hidden"></div>
 <div id="toast"></div>
 
 <script>
 (function () {
-  var tg = window.Telegram.WebApp;
+  var tg = window.Telegram && window.Telegram.WebApp;
+  // خارج از تلگرام: صفحه ساده و بدون خطا
+  if (!tg || !tg.initData || !tg.Serverless) {
+    document.body.innerHTML = '<div style="min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;font-family:Vazirmatn,system-ui,sans-serif;background:#F3F4F6;color:#1F2937"><div><div style="font-size:54px">📍</div><h1 style="color:#006644;margin:8px 0">پیدا | PEYDA</h1><p>بازار آنلاین نیازمندی‌های افغانستان</p><p style="color:#6B7280">این برنامه فقط داخل تلگرام باز می‌شود.</p><a href="https://t.me/PEYDA_YaarBot" style="display:inline-block;background:#00B894;color:#fff;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:700">باز کردن در تلگرام</a></div></div>';
+    return;
+  }
   tg.ready();
   tg.expand();
   try { tg.setHeaderColor('#006644'); tg.setBackgroundColor('#F3F4F6'); tg.setBottomBarColor('#FFFFFF'); } catch (e) {}
@@ -113,10 +129,12 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   const view = $('#view');
   const sheet = $('#sheet');
   const detail = $('#detail');
+  const composer = $('#composer');
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fa = (s) => String(s).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
-  const latin = (s) => String(s).replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g, '');
+  const toLat = (s) => String(s).replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  const latin = (s) => toLat(s).replace(/[^\d]/g, '');
   const money = (p) => (p == null ? 'توافقی' : fa(String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) + ' افغانی');
   const loc = (a) => [a.province, a.city].filter(Boolean).join('، ') || '—';
   const catLabel = (k) => { const c = CATS.find((x) => x.k === k); return c ? c.i + ' ' + c.n : ''; };
@@ -142,12 +160,13 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     t.textContent = m;
     t.classList.add('on');
     clearTimeout(tt);
-    tt = setTimeout(() => t.classList.remove('on'), 2600);
+    tt = setTimeout(() => t.classList.remove('on'), 2800);
   }
 
   const call = (name, input) => new Promise((resolve, reject) => {
     tg.Serverless.call(name, input || {}, (err, data) => (err ? reject(err) : resolve(data)));
   });
+  const errCode = (e) => (e && e.parameters && e.parameters.code) || '';
 
   // ---------- وضعیت ----------
   let savedF = {};
@@ -155,6 +174,11 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   const F = { q: '', category: '', province: savedF.province || '', minPrice: '', maxPrice: '', sort: 'new' };
   const S = { tab: 'home', page: 1, pages: 1, total: 0, items: [], req: 0 };
   const SV = { page: 1, pages: 1, items: [], req: 0 };
+  const P = { cat: '', title: '', desc: '', price: '', nego: false, prov: '', city: '', contact: '', useTg: false, files: [], busy: false, username: null };
+  function resetP() {
+    P.cat = ''; P.title = ''; P.desc = ''; P.price = ''; P.nego = false; P.prov = F.province || '';
+    P.city = ''; P.contact = ''; P.useTg = false; P.files = []; P.busy = false;
+  }
 
   // ---------- عکس‌ها (صف و بارگذاری تنبل) ----------
   const imgCache = new Map();
@@ -164,16 +188,16 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     while (active < 3 && queue.length) {
       const t = queue.shift();
       active++;
-      call('photo', { id: Number(t.id), i: Number(t.i) })
+      call('photo', { id: Number(t.id), i: Number(t.i), t: t.t ? 1 : 0 })
         .then((d) => t.res(d.src))
         .catch(t.rej)
         .finally(() => { active--; pump(); });
     }
   }
-  function fetchPhoto(id, i) {
-    const k = id + ':' + i;
+  function fetchPhoto(id, i, thumb) {
+    const k = id + ':' + i + ':' + (thumb ? 1 : 0);
     if (imgCache.has(k)) return imgCache.get(k);
-    const p = new Promise((res, rej) => { queue.push({ id, i, res, rej }); pump(); });
+    const p = new Promise((res, rej) => { queue.push({ id, i, t: thumb, res, rej }); pump(); });
     imgCache.set(k, p);
     p.catch(() => imgCache.delete(k));
     return p;
@@ -182,7 +206,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     if (!e.isIntersecting) return;
     io.unobserve(e.target);
     const el = e.target;
-    fetchPhoto(el.dataset.id, el.dataset.i)
+    fetchPhoto(el.dataset.id, el.dataset.i, el.dataset.t === '1')
       .then((src) => { el.style.backgroundImage = 'url("' + src + '")'; el.textContent = ''; })
       .catch(() => { el.textContent = '🖼'; });
   }), { rootMargin: '300px 600px' });
@@ -191,7 +215,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   // ---------- کارت آگهی ----------
   function cardHtml(a) {
     const img = a.photos > 0
-      ? '<div class="ph" data-lazy data-id="' + a.id + '" data-i="0"></div>'
+      ? '<div class="ph" data-lazy data-t="1" data-id="' + a.id + '" data-i="0"></div>'
       : '<div class="ph">🖼</div>';
     return '<article class="card" data-open="' + a.id + '">' + img +
       '<div class="cb"><h3>' + esc(a.title) + '</h3><div class="pr">' + money(a.price) + '</div>' +
@@ -293,14 +317,64 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     }
   }
 
-  // ---------- من ----------
+  // ---------- من: پروفایل و آگهی‌های من ----------
   function renderMe() {
     const u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
-    view.innerHTML = '<main class="pt"><div class="me"><div style="font-size:44px">👤</div><h2>' +
+    view.innerHTML = '<main class="pt"><div class="me"><div style="font-size:40px">👤</div><h2>' +
       esc([u.first_name, u.last_name].filter(Boolean).join(' ') || 'کاربر پیدا') + '</h2>' +
       (u.username ? '<div class="mt">@' + esc(u.username) + '</div>' : '') + '</div>' +
-      '<button class="btn" data-act="bot">🤖 باز کردن ربات (آگهی‌های من)</button>' +
-      '<button class="btn alt" data-act="channel">📢 کانال پیدا</button></main>';
+      '<button class="btn" data-act="newad">➕ ثبت آگهی جدید</button>' +
+      '<h2 style="margin-top:18px">📋 آگهی‌های من</h2><div id="mine" class="grid"></div>' +
+      '<button class="btn alt" style="margin-top:16px" data-act="channel">📢 کانال پیدا</button>' +
+      '<button class="btn alt" data-act="bot">🤖 باز کردن ربات</button></main>';
+    loadMine();
+  }
+
+  function mineCard(a) {
+    const stl = { active: '✅ فعال', sold: '🔴 فروخته‌شده', pending: '⏳ مخفی', hidden: '⛔ مخفی', rejected: '❌ رد شده' }[a.status] || a.status;
+    const img = a.photos > 0
+      ? '<div class="ph" data-lazy data-t="1" data-id="' + a.id + '" data-i="0"></div>'
+      : '<div class="ph">🖼</div>';
+    let btns = '';
+    if (a.status === 'active') {
+      btns += '<button class="mini" data-act="aa" data-id="' + a.id + '" data-a="sold">🔴 فروخته شد</button>' +
+        '<button class="mini" data-act="aa" data-id="' + a.id + '" data-a="renew">🔄 انتشار مجدد</button>';
+    } else if (a.status === 'sold') {
+      btns += '<button class="mini" data-act="aa" data-id="' + a.id + '" data-a="active">🟢 فعال‌سازی</button>';
+    }
+    btns += '<button class="mini" data-act="aa" data-id="' + a.id + '" data-a="delete">🗑 حذف</button>';
+    return '<article class="card"><div data-open="' + a.id + '">' + img +
+      '<div class="cb"><h3>' + esc(a.title) + '</h3><div class="pr">' + money(a.price) + '</div>' +
+      '<div class="mt">' + stl + ' • 👁 ' + fa(a.views || 0) + '</div></div></div><div class="cb act">' + btns + '</div></article>';
+  }
+
+  async function loadMine() {
+    try {
+      const r = await call('myAds', {});
+      const el = $('#mine');
+      if (!el) return;
+      el.innerHTML = r.items.length ? r.items.map(mineCard).join('') : '<div class="empty" style="grid-column:1/-1">هنوز آگهی‌ای ثبت نکرده‌اید.</div>';
+      observe(el);
+    } catch (e) {
+      toast(e.message || 'خطا');
+    }
+  }
+
+  function doAction(id, action) {
+    const run = async () => {
+      try {
+        await call('adAction', { id: id, action: action });
+        toast('انجام شد ✅');
+        loadMine();
+      } catch (e) {
+        toast(e.message || 'خطا');
+      }
+    };
+    if (action === 'delete') {
+      tg.showConfirm('این آگهی حذف شود؟ (از کانال هم پاک می‌شود)', (ok) => { if (ok) run(); });
+    } else {
+      run();
+    }
   }
 
   // ---------- صفحه آگهی ----------
@@ -313,7 +387,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   }
 
   function syncBack() {
-    const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden');
+    const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden') || !composer.classList.contains('hidden');
     if (open) tg.BackButton.show(); else tg.BackButton.hide();
   }
 
@@ -354,7 +428,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
       (a.status !== 'active' ? '<div class="warn">وضعیت آگهی: ' + esc(a.status) + '</div>' : '') +
       '<h2 style="margin-top:14px">توضیحات</h2><p class="desc">' + esc(a.description) + '</p>' +
       (a.note ? '<div class="note">📝 ' + esc(a.note) + '</div>' : '') +
-      (a.owner ? '<div class="note">این آگهی شماست. مدیریت آگهی (ویرایش، فروخته شد، حذف) فعلاً از ربات: «📋 آگهی‌های من» انجام می‌شود.</div>' : contactBtns(a.contact)) +
+      (a.owner ? '<div class="note">این آگهی شماست. فروخته شد، انتشار مجدد و حذف را از تب «من» انجام دهید.</div>' : contactBtns(a.contact)) +
       '<button class="btn alt" data-share="' + a.id + '" data-t="' + esc(a.title) + '">🔗 اشتراک‌گذاری</button></div>';
     observe(detail);
     const sl = $('#sl');
@@ -373,6 +447,143 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     } catch (e) {
       toast(e.message || 'خطا');
+    }
+  }
+
+  // ---------- ثبت آگهی ----------
+  async function openComposer() {
+    composer.classList.remove('hidden');
+    composer.innerHTML = '<button class="x" data-act="closecomp">✕</button><div class="dbody comp"><div class="empty">در حال بررسی…</div></div>';
+    syncBack();
+    try {
+      const r = await call('canPost', {});
+      if (!r.ok) { paintBlocked(r); return; }
+      P.username = r.username || null;
+      paintComposer();
+    } catch (e) {
+      toast(e.message || 'خطا');
+      closeComposer();
+    }
+  }
+
+  function closeComposer() {
+    composer.classList.add('hidden');
+    composer.innerHTML = '';
+    syncBack();
+    if (S.tab === 'home') loadList(true);
+    if (S.tab === 'me') loadMine();
+  }
+
+  function paintBlocked(r) {
+    composer.innerHTML = '<button class="x" data-act="closecomp">✕</button><div class="dbody comp"><div class="me"><div style="font-size:44px">📢</div><h2>' + esc(r.message) + '</h2></div>' +
+      (r.reason === 'NOT_MEMBER' ? '<button class="btn" data-act="channel">📢 عضویت در کانال</button>' : '') +
+      '<button class="btn alt" data-act="recheck">🔄 بررسی دوباره</button></div>';
+  }
+
+  function paintComposer() {
+    const contactBlock =
+      (P.username ? '<label class="chk"><input type="checkbox" id="p_usetg"' + (P.useTg ? ' checked' : '') + '> استفاده از آیدی تلگرام من (@' + esc(P.username) + ')</label>' : '') +
+      '<label>شماره تماس / واتساپ<input id="p_contact" inputmode="tel" placeholder="0799123456" value="' + esc(P.contact) + '"' + (P.useTg ? ' disabled' : '') + '></label>';
+    composer.innerHTML =
+      '<button class="x" data-act="closecomp">✕</button><div class="dbody form comp"><h2>➕ ثبت آگهی جدید</h2>' +
+      '<label>دسته‌بندی</label><div class="cats">' + CATS.map((c) => '<button type="button" class="cat ' + (P.cat === c.k ? 'on' : '') + '" data-pcat="' + c.k + '"><span class="i">' + c.i + '</span>' + esc(c.n) + '</button>').join('') + '</div>' +
+      '<label>عنوان آگهی<input id="p_title" maxlength="70" value="' + esc(P.title) + '"></label>' +
+      '<label>توضیحات<textarea id="p_desc" rows="5" maxlength="500">' + esc(P.desc) + '</textarea></label>' +
+      '<label>قیمت (افغانی)<input id="p_price" inputmode="numeric" value="' + esc(P.price) + '"' + (P.nego ? ' disabled' : '') + '></label>' +
+      '<label class="chk"><input type="checkbox" id="p_nego"' + (P.nego ? ' checked' : '') + '> قیمت توافقی</label>' +
+      '<label>ولایت<select id="p_prov"><option value="">انتخاب کنید</option>' + PROVS.map((p) => '<option' + (P.prov === p ? ' selected' : '') + '>' + p + '</option>').join('') + '</select></label>' +
+      '<label>شهر / منطقه<input id="p_city" maxlength="40" value="' + esc(P.city) + '"></label>' +
+      contactBlock +
+      '<label>عکس‌ها (تا ۵ عکس)</label><div class="thumbs" id="p_thumbs"></div>' +
+      '<input type="file" id="p_files" accept="image/*" multiple hidden>' +
+      '<div class="mt" id="p_st"></div>' +
+      '<button class="btn" id="p_submit" data-act="submitad">🚀 انتشار آگهی</button></div>';
+    paintThumbs();
+  }
+
+  function paintThumbs() {
+    const el = $('#p_thumbs');
+    if (!el) return;
+    el.innerHTML = P.files.map((d, i) => '<div class="th" style="background-image:url(\'' + d + '\')"><b data-act="rmph" data-i="' + i + '">✕</b></div>').join('') +
+      (P.files.length < 5 ? '<button type="button" class="addph" data-act="addph">＋</button>' : '');
+  }
+
+  function compress(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const r = Math.min(1, 1024 / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.width * r));
+        c.height = Math.max(1, Math.round(img.height * r));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.78));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('عکس خوانده نشد')); };
+      img.src = url;
+    });
+  }
+
+  async function addFiles(list) {
+    const room = 5 - P.files.length;
+    const arr = Array.from(list).slice(0, Math.max(0, room));
+    for (const f of arr) {
+      try { P.files.push(await compress(f)); } catch (e) { toast('یکی از عکس‌ها خوانده نشد'); }
+    }
+    paintThumbs();
+  }
+
+  function setSt(t) { const s = $('#p_st'); if (s) s.textContent = t; }
+
+  async function submitAd() {
+    if (P.busy) return;
+    const title = P.title.trim();
+    const desc = P.desc.trim();
+    if (!P.cat) return toast('دسته‌بندی را انتخاب کنید');
+    if (title.length < 5) return toast('عنوان حداقل ۵ حرف باشد');
+    if (desc.length < 10) return toast('توضیحات حداقل ۱۰ حرف باشد');
+    let price = null;
+    if (!P.nego) {
+      const n = Number(latin(P.price));
+      if (!n) return toast('قیمت را بنویسید یا «توافقی» را بزنید');
+      price = n;
+    }
+    if (!P.prov) return toast('ولایت را انتخاب کنید');
+    let contact;
+    if (P.useTg && P.username) contact = '@' + P.username;
+    else {
+      contact = toLat(P.contact).replace(/[\s\-()]/g, '');
+      if (!/^\+?\d{9,15}$/.test(contact)) return toast('شماره تماس معتبر نیست');
+    }
+
+    P.busy = true;
+    const btn = $('#p_submit');
+    if (btn) btn.disabled = true;
+    try {
+      const photos = [];
+      for (let i = 0; i < P.files.length; i++) {
+        setSt('در حال آپلود عکس ' + fa(i + 1) + ' از ' + fa(P.files.length) + '…');
+        const r = await call('uploadPhoto', { data: P.files[i].split(',')[1] });
+        photos.push({ id: r.id, thumb: r.thumb });
+      }
+      setSt('در حال انتشار…');
+      const r = await call('createAd', {
+        category: P.cat, title: title, description: desc, price: price,
+        province: P.prov, city: P.city.trim(), contact: contact, photos: photos,
+      });
+      resetP();
+      composer.innerHTML = '<button class="x" data-act="closecomp">✕</button><div class="dbody comp"><div class="me"><div style="font-size:48px">✅</div><h2>آگهی شما منتشر شد</h2><div class="mt">در کانال، ربات و مینی‌اپ دیده می‌شود.</div></div>' +
+        (r.channelUrl ? '<button class="btn" data-url="' + esc(r.channelUrl) + '">📢 مشاهده در کانال</button>' : '') +
+        '<button class="btn alt" data-open="' + r.id + '">👁 مشاهده آگهی</button>' +
+        '<button class="btn alt" data-act="closecomp">بستن</button></div>';
+    } catch (e) {
+      P.busy = false;
+      if (btn) btn.disabled = false;
+      setSt('');
+      if (errCode(e) === 'NOT_MEMBER') paintBlocked({ reason: 'NOT_MEMBER', message: e.message });
+      else toast(e.message || 'خطا در ثبت آگهی');
     }
   }
 
@@ -401,13 +612,35 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   }
 
   // ---------- رویدادها ----------
+  document.addEventListener('input', (e) => {
+    const id = e.target.id;
+    if (id === 'p_title') P.title = e.target.value;
+    else if (id === 'p_desc') P.desc = e.target.value;
+    else if (id === 'p_price') P.price = e.target.value;
+    else if (id === 'p_city') P.city = e.target.value;
+    else if (id === 'p_contact') P.contact = e.target.value;
+  });
+
+  document.addEventListener('change', async (e) => {
+    const id = e.target.id;
+    if (id === 'p_prov') P.prov = e.target.value;
+    else if (id === 'p_nego') { P.nego = e.target.checked; const pr = $('#p_price'); if (pr) pr.disabled = P.nego; }
+    else if (id === 'p_usetg') { P.useTg = e.target.checked; const c = $('#p_contact'); if (c) c.disabled = P.useTg; }
+    else if (id === 'p_files') { await addFiles(e.target.files); e.target.value = ''; }
+  });
+
   document.addEventListener('click', (e) => {
     if (e.target === sheet) { closeSheet(); return; }
-    if (e.target.id === 'fab') { tg.showAlert('ثبت آگهی از داخل مینی‌اپ به‌زودی فعال می‌شود. فعلاً از ربات استفاده کنید 🙏'); return; }
-    const t = e.target.closest('[data-open],[data-cat],[data-tab],[data-bm],[data-share],[data-tg],[data-wa],[data-more],[data-smore],[data-rm],[data-act]');
+    if (e.target.id === 'fab') { resetP(); openComposer(); return; }
+    const t = e.target.closest('[data-open],[data-cat],[data-pcat],[data-tab],[data-bm],[data-share],[data-tg],[data-wa],[data-url],[data-more],[data-smore],[data-rm],[data-act]');
     if (!t) return;
     const d = t.dataset;
     if (d.open) { openAd(Number(d.open)); return; }
+    if (d.pcat) {
+      P.cat = d.pcat;
+      document.querySelectorAll('[data-pcat]').forEach((b) => b.classList.toggle('on', b.dataset.pcat === P.cat));
+      return;
+    }
     if (d.cat) { F.category = F.category === d.cat && S.tab === 'home' ? '' : d.cat; S.tab = 'home'; render(); return; }
     if (d.tab) { S.tab = d.tab; render(); return; }
     if (d.bm) { toggleBm(Number(d.bm)); return; }
@@ -418,6 +651,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     }
     if (d.tg) { tg.openTelegramLink('https://t.me/' + d.tg); return; }
     if (d.wa) { tg.openLink('https://wa.me/' + d.wa); return; }
+    if (d.url) { tg.openTelegramLink(d.url); return; }
     if (d.more) { S.page += 1; loadList(false); return; }
     if (d.smore) { SV.page += 1; loadSaved(false); return; }
     if (d.rm) {
@@ -449,6 +683,13 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
         render();
         break;
       case 'closead': closeAd(); break;
+      case 'newad': resetP(); openComposer(); break;
+      case 'closecomp': closeComposer(); break;
+      case 'recheck': openComposer(); break;
+      case 'addph': { const fi = $('#p_files'); if (fi) fi.click(); break; }
+      case 'rmph': P.files.splice(Number(d.i), 1); paintThumbs(); break;
+      case 'submitad': submitAd(); break;
+      case 'aa': doAction(Number(d.id), d.a); break;
       case 'bot': tg.openTelegramLink('https://t.me/' + BOT); break;
       case 'channel': tg.openTelegramLink('https://t.me/PeydaAds'); break;
     }
@@ -456,7 +697,8 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 
   tg.BackButton.onClick(() => {
     if (!sheet.classList.contains('hidden')) closeSheet();
-    else closeAd();
+    else if (!detail.classList.contains('hidden')) closeAd();
+    else if (!composer.classList.contains('hidden')) closeComposer();
   });
 
   render();
