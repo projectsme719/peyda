@@ -1,1 +1,1 @@
-# peyda
+# peyda-miniapp
