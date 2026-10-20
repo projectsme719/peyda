@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>پیدا</title>
+  <script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+  <style>
+    body { margin:0; font-family: system-ui, sans-serif; background:#F3F4F6; color:#1F2937; display:grid; place-items:center; min-height:100vh; }
+    .card { background:#fff; border-radius:16px; padding:24px; width:min(90vw,360px); text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    h1 { color:#006644; margin:0 0 8px; }
+    .ok { color:#00B894; font-weight:700; }
+    .err { color:#c0392b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>پیدا | PEYDA</h1>
+    <p id="msg">در حال اتصال…</p>
+  </div>
+  <script>
+    var tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.Serverless.call('ping', {}, function (err, res) {
+      var el = document.getElementById('msg');
+      if (err) { el.className = 'err'; el.textContent = 'خطا: ' + err.message + ' (' + (err.type || err.status) + ')'; return; }
+      el.className = 'ok';
+      el.textContent = 'سلام ' + res.name + '! متصل به دیتابیس پیدا ✅ — آگهی فعال: ' + res.activeAds;
+    });
+  </script>
+</body>
+</html>
