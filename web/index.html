@@ -30,9 +30,6 @@ main.pt{padding-top:calc(env(safe-area-inset-top,0px) + 56px)}
 .cat{background:var(--card);border-radius:14px;padding:10px 2px;text-align:center;font-size:10.5px;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,.06);border:0;color:var(--ink)}
 .cat .i{display:block;font-size:22px;margin-bottom:2px}
 .cat.on{outline:2px solid var(--g)}
-.cats.big{grid-template-columns:repeat(2,1fr)}
-.cats.big .cat{font-size:14px;padding:18px 8px}
-.cats.big .cat .i{font-size:32px}
 h2{font-size:15px;margin:6px 2px 10px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .card{background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
@@ -45,12 +42,13 @@ h2{font-size:15px;margin:6px 2px 10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .chip{background:#d1fae5;color:var(--gd);border-radius:99px;padding:4px 10px;font-size:12px;border:0}
 .more{display:block;margin:14px auto 0;background:var(--g);color:#fff;border:0;border-radius:12px;padding:10px 24px;font-weight:700}
-.empty{text-align:center;color:var(--mute);padding:40px 0}
+.empty{text-align:center;color:var(--mute);padding:40px 0;line-height:2}
 nav{position:fixed;inset-inline:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);background:#fff;border-radius:24px;box-shadow:0 6px 24px rgba(0,0,0,.15);display:flex;justify-content:space-around;align-items:center;padding:6px;z-index:10}
-nav button{flex:1;background:none;border:0;color:var(--mute);font-size:10px;padding:6px 0}
+nav button{position:relative;flex:1;background:none;border:0;color:var(--mute);font-size:10px;padding:6px 0}
 nav button span{display:block;font-size:20px}
 nav button.on{color:var(--g);font-weight:700}
 nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#fff;font-size:28px;margin-top:-22px;box-shadow:0 6px 16px rgba(0,184,148,.45);padding:0}
+.bdg{position:absolute;top:0;inset-inline-end:18%;background:#e11d48;color:#fff;font-style:normal;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:99px;display:grid;place-items:center;padding:0 4px}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;display:flex;align-items:flex-end}
 .sheet .box{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px);max-height:85vh;overflow:auto}
 .sheet label,.form label{display:block;margin:0 0 12px;color:var(--mute);font-size:12px}
@@ -72,7 +70,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 .desc{white-space:pre-wrap;line-height:1.9;margin:0}
 .note,.warn{background:#fff7d6;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:12.5px;line-height:1.8}
 .x{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);inset-inline-start:10px;z-index:25;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:50%;width:36px;height:36px;font-size:16px}
-#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#1F2937;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:88vw;text-align:center}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);background:#1F2937;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:88vw;text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%)}
 .me{background:#fff;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -81,13 +79,37 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 .addph{width:72px;height:72px;border:2px dashed var(--g);border-radius:12px;display:grid;place-items:center;color:var(--g);font-size:26px;background:#fff}
 .act{display:flex;flex-wrap:wrap;gap:6px;padding-top:0}
 .mini{border:0;border-radius:10px;padding:6px 8px;background:#eef2f7;color:var(--ink);font-size:11px}
+.crow{display:flex;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.cav{width:42px;height:42px;border-radius:50%;background:#d1fae5;display:grid;place-items:center;font-size:20px;flex:none}
+.cmid{flex:1;min-width:0}
+.cmid b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmid .mt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cend{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.cend .bdg{position:static}
+.chat{position:fixed;left:0;top:0;width:100%;z-index:22;background:#E6EDF0}
+.chatbox{display:flex;flex-direction:column;height:100%}
+.chead{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 10px;background:linear-gradient(135deg,var(--gd),#00805a);color:#fff}
+.chead .ct{flex:1;min-width:0}
+.chead .ct b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chead .ct small{opacity:.85;font-size:11px}
+.cx{border:0;background:rgba(255,255,255,.2);color:#fff;border-radius:50%;width:34px;height:34px;font-size:16px;flex:none}
+.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.b{max-width:78%;padding:8px 12px;border-radius:16px;line-height:1.8;font-size:13.5px;word-break:break-word}
+.b.me{align-self:flex-start;background:var(--g);color:#fff;border-bottom-right-radius:4px;margin:0}
+.b.they{align-self:flex-end;background:#fff;border-bottom-left-radius:4px}
+.bt{white-space:pre-wrap}
+.tm{font-size:10px;opacity:.7;margin-top:2px}
+.cin{display:flex;gap:8px;align-items:flex-end;padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);background:#fff}
+.cin textarea{flex:1;border:1px solid #e5e7eb;border-radius:18px;padding:10px 14px;resize:none;max-height:110px;outline:none;background:#fff;color:var(--ink)}
+.send{width:42px;height:42px;border-radius:50%;border:0;background:var(--g);color:#fff;font-size:18px;flex:none}
+.cblock{flex:1;text-align:center;color:var(--mute);font-size:12.5px;padding:8px}
 </style>
 </head>
 <body>
 <div id="view"></div>
 <nav id="nav">
   <button data-tab="home"><span>🏠</span>خانه</button>
-  <button data-tab="cats"><span>🗂</span>دسته‌ها</button>
+  <button data-tab="chats"><span>💬</span>گفتگو<i class="bdg hidden" id="bdg"></i></button>
   <button class="fab" id="fab">＋</button>
   <button data-tab="saved"><span>⭐</span>نشان‌شده</button>
   <button data-tab="me"><span>👤</span>من</button>
@@ -95,6 +117,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 <div id="sheet" class="sheet hidden"></div>
 <div id="composer" class="detail hidden"></div>
 <div id="detail" class="detail hidden"></div>
+<div id="chat" class="chat hidden"></div>
 <div id="toast"></div>
 
 <script>
@@ -130,6 +153,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   const sheet = $('#sheet');
   const detail = $('#detail');
   const composer = $('#composer');
+  const chatEl = $('#chat');
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fa = (s) => String(s).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -145,6 +169,10 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     if (s < 3600) return fa(Math.floor(s / 60)) + ' دقیقه پیش';
     if (s < 86400) return fa(Math.floor(s / 3600)) + ' ساعت پیش';
     return fa(Math.floor(s / 86400)) + ' روز پیش';
+  };
+  const hm = (t) => {
+    const d = new Date(t * 1000);
+    return fa(('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2));
   };
   const waNum = (c) => {
     let d = String(c).replace(/\D/g, '');
@@ -175,6 +203,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   const S = { tab: 'home', page: 1, pages: 1, total: 0, items: [], req: 0 };
   const SV = { page: 1, pages: 1, items: [], req: 0 };
   const P = { cat: '', title: '', desc: '', price: '', nego: false, prov: '', city: '', contact: '', useTg: false, files: [], busy: false, username: null };
+  const C = { id: null, last: 0, meta: null, timer: null, sending: false, blocked: undefined };
   function resetP() {
     P.cat = ''; P.title = ''; P.desc = ''; P.price = ''; P.nego = false; P.prov = F.province || '';
     P.city = ''; P.contact = ''; P.useTg = false; P.files = []; P.busy = false;
@@ -286,10 +315,166 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     observe(l);
   }
 
-  // ---------- دسته‌ها ----------
-  function renderCats() {
-    view.innerHTML = '<main class="pt"><h2>🗂 دسته‌بندی‌ها</h2><div class="cats big">' +
-      CATS.map((c) => '<button class="cat" data-cat="' + c.k + '"><span class="i">' + c.i + '</span>' + esc(c.n) + '</button>').join('') + '</div></main>';
+  // ---------- گفتگوها (لیست) ----------
+  function setBadge(n) {
+    const b = $('#bdg');
+    if (!b) return;
+    b.textContent = fa(n);
+    b.classList.toggle('hidden', !n);
+  }
+  async function refreshBadge() {
+    try {
+      const r = await call('chatList', {});
+      setBadge(r.unread);
+      return r;
+    } catch (e) {
+      return null;
+    }
+  }
+  function chatRow(c) {
+    return '<div class="crow" data-conv="' + c.id + '"><div class="cav">' + (c.role === 'buyer' ? '🏪' : '🛒') + '</div>' +
+      '<div class="cmid"><b>' + esc(c.title) + '</b><div class="mt">' + (c.role === 'buyer' ? 'فروشنده' : 'خریدار') + ': ' + esc(c.last) + '</div></div>' +
+      '<div class="cend"><div class="mt">' + ago(c.at) + '</div>' + (c.unread ? '<i class="bdg">' + fa(c.unread) + '</i>' : '') + '</div></div>';
+  }
+  function renderChats() {
+    view.innerHTML = '<main class="pt"><h2>💬 گفتگوها</h2><div id="clist"><div class="empty">در حال بارگذاری…</div></div></main>';
+    loadChats();
+  }
+  async function loadChats() {
+    const r = await refreshBadge();
+    const el = $('#clist');
+    if (!el) return;
+    if (!r) { el.innerHTML = '<div class="empty">خطا در بارگذاری گفتگوها</div>'; return; }
+    el.innerHTML = r.items.length ? r.items.map(chatRow).join('') : '<div class="empty">هنوز گفتگویی ندارید.<br>در صفحه آگهی روی «💬 گفتگو با فروشنده» بزنید.</div>';
+  }
+
+  // ---------- صفحه چت ----------
+  function sizeChat() { chatEl.style.height = (tg.viewportHeight || window.innerHeight) + 'px'; }
+  tg.onEvent('viewportChanged', () => {
+    if (chatEl.classList.contains('hidden')) return;
+    sizeChat();
+    const m = $('#msgs');
+    if (m) m.scrollTop = m.scrollHeight;
+  });
+
+  async function startChat(adId) {
+    try {
+      const r = await call('chatStart', { adId: adId });
+      openChat(r.id);
+    } catch (e) {
+      toast(e.message || 'خطا');
+    }
+  }
+
+  async function openChat(id) {
+    C.id = id; C.last = 0; C.meta = null; C.blocked = undefined;
+    chatEl.classList.remove('hidden');
+    chatEl.innerHTML = '<div class="chatbox"><div class="chead"><button class="cx" data-act="chatclose">✕</button>' +
+      '<div class="ct"><b id="ctitle">…</b><small id="csub"></small></div><button class="cx" data-act="chatmenu">⋮</button></div>' +
+      '<div class="msgs" id="msgs"></div><div class="cin" id="cin"></div></div>';
+    sizeChat();
+    syncBack();
+    await pollChat(true);
+    clearInterval(C.timer);
+    C.timer = setInterval(() => pollChat(false), 3000);
+  }
+
+  function closeChat() {
+    clearInterval(C.timer);
+    C.timer = null;
+    C.id = null;
+    chatEl.classList.add('hidden');
+    chatEl.innerHTML = '';
+    syncBack();
+    if (S.tab === 'chats') loadChats(); else refreshBadge();
+  }
+
+  async function pollChat(first) {
+    if (!C.id || (document.hidden && !first)) return;
+    const id = C.id;
+    try {
+      const r = await call('chatMessages', { id: id, after: C.last });
+      if (id !== C.id) return;
+      applyMeta(r.meta);
+      appendMsgs(r.messages, first);
+    } catch (e) {
+      if (first) { toast(e.message || 'خطا'); closeChat(); }
+    }
+  }
+
+  function applyMeta(meta) {
+    C.meta = meta;
+    const t = $('#ctitle');
+    if (t) t.textContent = meta.title;
+    const s = $('#csub');
+    if (s) s.textContent = meta.role === 'buyer' ? 'گفتگو با فروشنده' : 'گفتگو با خریدار';
+    if (meta.blocked !== C.blocked) {
+      C.blocked = meta.blocked;
+      const box = $('#cin');
+      if (!box) return;
+      if (meta.blocked) {
+        box.innerHTML = '<div class="cblock">' + (meta.blockedByMe ? 'شما این گفتگو را بسته‌اید. ' : 'این گفتگو بسته شده است.') +
+          (meta.blockedByMe ? '<button class="mini" data-act="chatunblock">باز کردن گفتگو</button>' : '') + '</div>';
+      } else {
+        box.innerHTML = '<textarea id="cinput" rows="1" maxlength="500" placeholder="پیام خود را بنویسید…"></textarea><button class="send" data-act="chatsend">⬆</button>';
+      }
+    }
+  }
+
+  function appendMsgs(list, force) {
+    const box = $('#msgs');
+    if (!box) return;
+    const near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+    let added = false;
+    list.forEach((m) => {
+      if (m.id <= C.last) return;
+      C.last = m.id;
+      const d = document.createElement('div');
+      d.className = 'b ' + (m.mine ? 'me' : 'they');
+      d.innerHTML = '<div class="bt">' + esc(m.text) + '</div><div class="tm">' + hm(m.created) + '</div>';
+      box.appendChild(d);
+      added = true;
+    });
+    if (added && (force || near)) box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendChat() {
+    if (C.sending || !C.id) return;
+    const inp = $('#cinput');
+    if (!inp) return;
+    const text = inp.value.trim();
+    if (!text) return;
+    C.sending = true;
+    try {
+      const m = await call('chatSend', { id: C.id, text: text });
+      inp.value = '';
+      appendMsgs([m], true);
+    } catch (e) {
+      toast(e.message || 'خطا در ارسال');
+      pollChat(false);
+    } finally {
+      C.sending = false;
+    }
+  }
+
+  async function chatAct(a) {
+    try {
+      const r = await call('chatAction', { id: C.id, action: a });
+      toast(a === 'report' ? 'گزارش ثبت شد 🙏' : (r.blocked ? 'گفتگو بسته شد' : 'گفتگو دوباره باز شد'));
+      pollChat(false);
+    } catch (e) {
+      toast(e.message || 'خطا');
+    }
+  }
+
+  function chatMenu() {
+    const buttons = [];
+    if (!C.meta || !C.meta.blocked) buttons.push({ id: 'block', type: 'default', text: '🚫 بستن گفتگو' });
+    buttons.push({ id: 'report', type: 'destructive', text: '🚩 گزارش گفتگو' });
+    buttons.push({ type: 'cancel' });
+    tg.showPopup({ message: 'گزینه‌های گفتگو', buttons: buttons }, (id) => {
+      if (id === 'block' || id === 'report') chatAct(id);
+    });
   }
 
   // ---------- نشان‌شده‌ها ----------
@@ -380,14 +565,15 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   // ---------- صفحه آگهی ----------
   function contactBtns(c) {
     if (!c) return '';
-    if (c[0] === '@') return '<button class="btn" data-tg="' + esc(c.slice(1)) + '">✈️ پیام در تلگرام</button>';
+    if (c[0] === '@') return '<button class="btn alt" data-tg="' + esc(c.slice(1)) + '">✈️ پیام در تلگرام</button>';
     const wa = waNum(c);
-    return (wa ? '<button class="btn" data-wa="' + wa + '">💬 واتساپ</button>' : '') +
+    return (wa ? '<button class="btn alt" data-wa="' + wa + '">💬 واتساپ</button>' : '') +
       '<a class="btn alt" href="tel:' + esc(c) + '">📞 تماس تلفنی (' + esc(fa(c)) + ')</a>';
   }
 
   function syncBack() {
-    const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden') || !composer.classList.contains('hidden');
+    const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden') ||
+      !composer.classList.contains('hidden') || !chatEl.classList.contains('hidden');
     if (open) tg.BackButton.show(); else tg.BackButton.hide();
   }
 
@@ -418,6 +604,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     } else {
       slides = '<div class="slide">🖼</div>';
     }
+    const chatBtn = !a.owner && a.status === 'active' ? '<button class="btn" data-chat="' + a.id + '">💬 گفتگو با فروشنده</button>' : '';
     detail.innerHTML =
       '<button class="x" data-act="closead">✕</button>' + slides +
       '<div class="dbody"><div class="row"><h1>' + esc(a.title) + '</h1>' +
@@ -428,7 +615,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
       (a.status !== 'active' ? '<div class="warn">وضعیت آگهی: ' + esc(a.status) + '</div>' : '') +
       '<h2 style="margin-top:14px">توضیحات</h2><p class="desc">' + esc(a.description) + '</p>' +
       (a.note ? '<div class="note">📝 ' + esc(a.note) + '</div>' : '') +
-      (a.owner ? '<div class="note">این آگهی شماست. فروخته شد، انتشار مجدد و حذف را از تب «من» انجام دهید.</div>' : contactBtns(a.contact)) +
+      (a.owner ? '<div class="note">این آگهی شماست. فروخته شد، انتشار مجدد و حذف را از تب «من» انجام دهید.</div>' : chatBtn + contactBtns(a.contact)) +
       '<button class="btn alt" data-share="' + a.id + '" data-t="' + esc(a.title) + '">🔗 اشتراک‌گذاری</button></div>';
     observe(detail);
     const sl = $('#sl');
@@ -606,7 +793,7 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     document.querySelectorAll('#nav [data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === S.tab));
     window.scrollTo(0, 0);
     if (S.tab === 'home') renderHome();
-    else if (S.tab === 'cats') renderCats();
+    else if (S.tab === 'chats') renderChats();
     else if (S.tab === 'saved') renderSaved();
     else renderMe();
   }
@@ -619,6 +806,10 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
     else if (id === 'p_price') P.price = e.target.value;
     else if (id === 'p_city') P.city = e.target.value;
     else if (id === 'p_contact') P.contact = e.target.value;
+    else if (id === 'cinput') {
+      e.target.style.height = 'auto';
+      e.target.style.height = Math.min(110, e.target.scrollHeight) + 'px';
+    }
   });
 
   document.addEventListener('change', async (e) => {
@@ -632,10 +823,12 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
   document.addEventListener('click', (e) => {
     if (e.target === sheet) { closeSheet(); return; }
     if (e.target.id === 'fab') { resetP(); openComposer(); return; }
-    const t = e.target.closest('[data-open],[data-cat],[data-pcat],[data-tab],[data-bm],[data-share],[data-tg],[data-wa],[data-url],[data-more],[data-smore],[data-rm],[data-act]');
+    const t = e.target.closest('[data-open],[data-cat],[data-pcat],[data-tab],[data-bm],[data-share],[data-tg],[data-wa],[data-url],[data-chat],[data-conv],[data-more],[data-smore],[data-rm],[data-act]');
     if (!t) return;
     const d = t.dataset;
     if (d.open) { openAd(Number(d.open)); return; }
+    if (d.chat) { startChat(Number(d.chat)); return; }
+    if (d.conv) { openChat(Number(d.conv)); return; }
     if (d.pcat) {
       P.cat = d.pcat;
       document.querySelectorAll('[data-pcat]').forEach((b) => b.classList.toggle('on', b.dataset.pcat === P.cat));
@@ -690,6 +883,10 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
       case 'rmph': P.files.splice(Number(d.i), 1); paintThumbs(); break;
       case 'submitad': submitAd(); break;
       case 'aa': doAction(Number(d.id), d.a); break;
+      case 'chatclose': closeChat(); break;
+      case 'chatsend': sendChat(); break;
+      case 'chatmenu': chatMenu(); break;
+      case 'chatunblock': chatAct('unblock'); break;
       case 'bot': tg.openTelegramLink('https://t.me/' + BOT); break;
       case 'channel': tg.openTelegramLink('https://t.me/PeydaAds'); break;
     }
@@ -697,11 +894,22 @@ nav .fab{flex:0 0 52px;height:52px;border-radius:50%;background:var(--g);color:#
 
   tg.BackButton.onClick(() => {
     if (!sheet.classList.contains('hidden')) closeSheet();
+    else if (!chatEl.classList.contains('hidden')) closeChat();
     else if (!detail.classList.contains('hidden')) closeAd();
     else if (!composer.classList.contains('hidden')) closeComposer();
   });
 
+  // نشان گفتگوی نخوانده: هر ۲۵ ثانیه
+  setInterval(() => {
+    if (document.hidden || !chatEl.classList.contains('hidden')) return;
+    if (S.tab === 'chats') loadChats(); else refreshBadge();
+  }, 25000);
+
   render();
+  refreshBadge();
+  // باز شدن مستقیم یک گفتگو از دکمه نوتیفیکیشن ربات
+  const startChatId = Number(new URLSearchParams(location.search).get('chat'));
+  if (startChatId) openChat(startChatId);
 })();
 </script>
 </body>
