@@ -1,0 +1,9 @@
+{
+  "name": "peyda-seo",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "vars": { "SITE_URL": "https://app.peydaaf.kdns.fr" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "peyda-seo", "database_id": "ID_جدید_دیتابیس" }
+  ]
+}
