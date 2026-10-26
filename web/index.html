@@ -1101,6 +1101,17 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
   if (chatParam) openChat(chatParam);
   else if (adParam) openAd(adParam);
 })();
+  const qs = new URLSearchParams(location.search);
+  const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
+  const mAd = sp.match(/^ad_(\d+)$/);
+  const mChat = sp.match(/^chat_(\d+)$/);
+  const adParam = Number(qs.get('ad')) || (mAd ? Number(mAd[1]) : 0);
+  const chatParam = Number(qs.get('chat')) || (mChat ? Number(mChat[1]) : 0);
+  if (chatParam) openChat(chatParam);
+  else if (adParam) openAd(adParam);
+  else if (sp === 'new') { resetP(); openComposer(); }
+})();
+
 </script>
 </body>
 </html>
