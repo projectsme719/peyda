@@ -895,7 +895,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
     const cfg = CFG && P.cat ? CFG[P.cat] : null;
     const title = P.title.trim();
     const desc = P.desc.trim();
-    if (title.length < 5) return toast('عنوان حداقل ۵ حرف باشد');
+    if (title.length < 3) return toast('عنوان حداقل ۳ حرف باشد');
     if (!cfg) return toast('دسته‌بندی را انتخاب کنید');
     for (const f of cfg.fields) {
       if (f.req && !(P.attrs[f.k] || '').trim()) return toast('«' + f.l + '» را انتخاب کنید');
@@ -908,7 +908,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
       if (!n) return toast('قیمت را بنویسید یا «توافقی» را بزنید');
       price = n;
     }
-    if (desc.length < 10) return toast('توضیحات حداقل ۱۰ حرف باشد');
+    if (desc.length < 5) return toast('توضیحات حداقل ۵ حرف باشد');
     if (!P.prov) return toast('ولایت را انتخاب کنید');
     let contact;
     if (P.useTg && P.username) contact = '@' + P.username;
