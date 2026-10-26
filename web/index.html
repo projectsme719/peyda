@@ -1092,15 +1092,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
   ensureCfg().then(() => { if (S.tab === 'home') paintList(); }).catch(() => {});
   // باز شدن مستقیم یک گفتگو از دکمه نوتیفیکیشن ربات
     // باز شدن مستقیم آگهی یا گفتگو (از دکمه‌های ربات، کانال و لینک‌های startapp)
-  const qs = new URLSearchParams(location.search);
-  const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
-  const mAd = sp.match(/^ad_(\d+)$/);
-  const mChat = sp.match(/^chat_(\d+)$/);
-  const adParam = Number(qs.get('ad')) || (mAd ? Number(mAd[1]) : 0);
-  const chatParam = Number(qs.get('chat')) || (mChat ? Number(mChat[1]) : 0);
-  if (chatParam) openChat(chatParam);
-  else if (adParam) openAd(adParam);
-})();
+  
   const qs = new URLSearchParams(location.search);
   const sp = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
   const mAd = sp.match(/^ad_(\d+)$/);
