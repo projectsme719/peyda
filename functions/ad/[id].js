@@ -1,9 +1,8 @@
 /**
  * @file functions/ad/[id].js
- * @version 2.1.0
+ * @version 2.2.0
  * @updated 2026-10-30
- * GET /ad/12 - server-rendered ad page in the Mini App look
- * (HTML, meta tags, JSON-LD).
+ * GET /ad/12 - server-rendered ad page (HTML, meta tags, JSON-LD).
  */
 import { PROV_SLUGS } from '../../cf/filters.js';
 import { toInt, parseList } from '../../cf/lib.js';
@@ -14,26 +13,41 @@ import {
 
 const MAX_PHOTOS = 10;
 
+const COND_LD = {
+  new: 'https://schema.org/NewCondition',
+  used: 'https://schema.org/UsedCondition',
+};
+
+// Google wants a price AND an image for Product rich results; ads without
+// them are described as a plain WebPage instead (no Search Console errors).
+const isProduct = (r, imgs) => r.price > 0 && imgs.length > 0;
+
 function jsonLd(r, canon, imgs, cat, sold) {
-  const hasPrice = r.price != null;
+  const flat = String(r.description).replace(/\s+/g, ' ').trim();
+  const prod = isProduct(r, imgs);
   const ld = {
     '@context': 'https://schema.org',
-    '@type': hasPrice ? 'Product' : 'WebPage',
+    '@type': prod ? 'Product' : 'WebPage',
     name: r.title,
-    description: String(r.description).replace(/\s+/g, ' ').slice(0, 500),
     url: canon,
   };
-  if (hasPrice && cat) ld.category = cat;
+  if (flat) ld.description = flat.slice(0, 500);
   if (imgs.length) ld.image = imgs;
-  if (hasPrice) {
+  if (prod) {
+    if (cat) ld.category = cat;
+    const until = new Date(Date.now() + 30 * 864e5);
     ld.offers = {
       '@type': 'Offer',
+      url: canon,
       priceCurrency: 'AFN',
       price: r.price,
-      url: canon,
-      availability: 'https://schema.org/'
-        + (sold ? 'SoldOut' : 'InStock'),
+      priceValidUntil: until.toISOString().slice(0, 10),
+      availability: 'https://schema.org/' + (sold ? 'SoldOut' : 'InStock'),
     };
+    if (COND_LD[r.cond]) ld.offers.itemCondition = COND_LD[r.cond];
+    if (r.shop && r.shop_name) {
+      ld.offers.seller = { '@type': 'Organization', name: r.shop_name };
+    }
   }
   return '<script type="application/ld+json">'
     + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>';
@@ -50,9 +64,13 @@ function details(r, cat, where) {
       rows.push([x.l, /^\d+$/.test(x.v) ? fa(x.v) : x.v]);
     }
   });
-  if (r.shop && r.shop_name) rows.push(['فروشنده', r.shop_name]);
-  return rows.map(([k, v]) =>
-    `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  if (r.shop && r.shop_name) {
+    rows.push(['فروشنده', r.shop_name,
+      '/shop/' + encodeURIComponent(r.shop_name)]);
+  }
+  return rows.map(([k, v, to]) => `<dt>${esc(k)}</dt><dd>`
+    + (to ? `<a href="${esc(to)}">${esc(v)}</a>` : esc(v)) + '</dd>')
+    .join('');
 }
 
 export async function onRequestGet({ request, env, params }) {
@@ -80,7 +98,8 @@ export async function onRequestGet({ request, env, params }) {
   const sold = r.status === 'sold';
   const count = Math.min(parseList(r.photos).length, MAX_PHOTOS);
   const idx = Array.from({ length: count }, (_, i) => i);
-  const imgs = idx.slice(0, 5).map((i) => `${site}/api/img?id=${r.id}&i=${i}`);
+  const imgs = idx.slice(0, 5)
+    .map((i) => `${site}/api/img?id=${r.id}&i=${i}`);
   const where = loc(r);
   const cat = catName(r.category);
   const flat = String(r.description).replace(/\s+/g, ' ').trim();
@@ -89,7 +108,8 @@ export async function onRequestGet({ request, env, params }) {
 
   const head = (imgs.length
     ? `<meta property="og:image" content="${esc(imgs[0])}">` : '')
-    + '<meta property="og:type" content="product">'
+    + `<meta property="og:type" content="${
+      isProduct(r, imgs) ? 'product' : 'website'}">`
     + '<meta name="twitter:card" content="summary_large_image">'
     + jsonLd(r, canon, imgs, cat, sold);
 
@@ -100,14 +120,14 @@ export async function onRequestGet({ request, env, params }) {
       + `${i ? ' loading="lazy"' : ''}>`).join('') + '</div>'
     : '';
 
-    const ps = PROV_SLUGS[r.province];
-  const more = (cat || ps)
-    ? '<div class="box">'
-      + (cat ? `<a href="/c/${r.category}">آگهی‌های بیشتر در ${esc(cat)}</a>` : '')
-      + (cat && ps ? ' · ' : '')
-      + (ps ? `<a href="/p/${ps}">آگهی‌های ${esc(r.province)}</a>` : '')
-      + '</div>'
-    : '';
+  const ps = PROV_SLUGS[r.province];
+  const links = [];
+  if (cat) {
+    links.push(`<a href="/c/${r.category}">آگهی‌های بیشتر در ${esc(cat)}</a>`);
+  }
+  if (ps) links.push(`<a href="/p/${ps}">آگهی‌های ${esc(r.province)}</a>`);
+  const more = links.length
+    ? `<div class="box">${links.join(' · ')}</div>` : '';
 
   const body = `<article>${gal}
 <div class="box">${sold ? '<span class="sold">فروخته شد</span>' : ''}
