@@ -1,6 +1,7 @@
 /**
  * @file functions/about.js
- * @version 1.0.0
+ * @version 1.1.0
+ * @updated 2026-10-30
  * GET /about - about Peyda + how-to guide (static content).
  */
 import { shell } from '../cf/theme.js';
@@ -92,9 +93,9 @@ export const onRequestGet = ({ request, env }) => {
     desc: 'پیدا بازار آنلاین نیازمندی‌های افغانستان است. راهنمای ثبت '
       + 'آگهی، جستجو، فیلتر و نکات امنیتی خرید و فروش.',
     canon: site + '/about', robots: 'index, follow', compact: true,
-    body: BODY,
-        css: '.box ol,.box ul{margin:6px 0;padding-inline-start:22px;'
-      + 'line-height:2}.box a:not(.btn){color:var(--gd);font-weight:700}'
-      + '.box p{white-space:normal}',
+    tab: '', body: BODY,
+    css: '.box ol,.box ul{margin:6px 0;padding-inline-start:22px;'
+      + 'line-height:2}.box a:not(.btn){text-decoration:underline;'
+      + 'font-weight:700}.box p{white-space:normal}',
   });
 };
