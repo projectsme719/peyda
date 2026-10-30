@@ -1,6 +1,6 @@
 /**
  * @file cf/theme.js
- * @version 1.1.0
+ * @version 1.2.0
  * @updated 2026-10-30
  * Mini App look for the server pages: helpers, CSS and page shell.
  */
@@ -123,7 +123,9 @@ dt{color:var(--mute)}dd{margin:0}
 .btn{flex:1;min-width:150px;display:flex;gap:8px;justify-content:center;
 align-items:center;background:var(--g);color:#fff;border-radius:14px;
 padding:12px;font-weight:700;box-shadow:var(--sm)}
-.btn.alt{background:var(--bg);color:var(--gd)}`;
+.btn.alt{background:var(--bg);color:var(--gd)}
+.foot{text-align:center;padding:0 14px 40px;font-size:12px}
+.foot a{color:var(--gd);font-weight:700}`;
 
 // o: { title, desc, canon, robots, body, head, q, action, compact,
 //      status, cache, css (extra), hidden (extra search inputs) }
@@ -155,7 +157,9 @@ ${o.head || ''}<style>${CSS}${o.css || ''}</style></head><body>${SPRITE}
 <header class="top"><div class="row"><a class="logo" href="/">پیدا
 <small>PEYDA</small></a><a class="pill" href="https://t.me/${BOT}"
 rel="nofollow">${ic('plus')}ثبت آگهی</a></div>${search}</header>
-<main>${o.body}</main></body></html>`;
+<main>${o.body}</main>
+<footer class="foot"><a href="/about">دربارهٔ پیدا و راهنما</a></footer>
+</body></html>`;
 
   return new Response(html, {
     status: o.status || 200,
