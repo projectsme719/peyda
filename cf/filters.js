@@ -61,7 +61,8 @@ export const hidden = (o) => Object.keys(o).filter((k) => o[k]).map((k) =>
 // o: { base, province, minPrice, maxPrice, deal, cond, keep, reset }
 // keep = fields to carry through (q, sort); reset = clear-all link.
 export function filterBox(o) {
-  const on = o.province || o.minPrice || o.maxPrice || o.deal || o.cond;
+    const on = !o.closed
+    && (o.province || o.minPrice || o.maxPrice || o.deal || o.cond);
   const opts = ['<option value="">همه ولایت‌ها</option>']
     .concat(PROVS.map((p) =>
       `<option${p === o.province ? ' selected' : ''}>${esc(p)}</option>`))
