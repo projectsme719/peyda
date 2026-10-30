@@ -1,7 +1,7 @@
 /**
  * @file functions/sitemap.xml.js
- * @version 1.2.0
- * GET /sitemap.xml - home, listings, categories, provinces, active ads.
+ * @version 1.3.0
+ * GET /sitemap.xml - home, listings, about, categories, provinces, ads.
  */
 import { PROV_SLUGS } from '../cf/filters.js';
 
@@ -24,6 +24,7 @@ export async function onRequestGet({ request, env }) {
   const urls = [
     `<url><loc>${site}/</loc></url>`,
     `<url><loc>${site}/ads</loc></url>`,
+    `<url><loc>${site}/about</loc></url>`,
   ];
   for (const c of cats.results) {
     if (/^[a-z]{2,20}$/.test(c.category)) {
