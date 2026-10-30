@@ -1,6 +1,6 @@
 /**
  * @file cf/theme.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-30
  * Mini App look for the server pages: helpers, CSS and page shell.
  */
@@ -18,6 +18,16 @@ export const fa = (s) => String(s).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[
 export const money = (p) => (p == null ? 'توافقی'
   : fa(String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) + ' افغانی');
 export const loc = (r) => [r.province, r.city].filter(Boolean).join('، ');
+
+// Unix seconds -> "۲ ساعت پیش" (pages are cached, so it can be a bit old).
+export const ago = (t) => {
+  if (!t) return '';
+  const s = Math.max(0, Math.floor(Date.now() / 1000) - t);
+  if (s < 60) return 'همین الان';
+  if (s < 3600) return fa(Math.floor(s / 60)) + ' دقیقه پیش';
+  if (s < 86400) return fa(Math.floor(s / 3600)) + ' ساعت پیش';
+  return fa(Math.floor(s / 86400)) + ' روز پیش';
+};
 
 const FONT = 'https://fonts.googleapis.com/css2?family=Vazirmatn:'
   + 'wght@400;500;700;800&display=swap';
@@ -116,11 +126,12 @@ padding:12px;font-weight:700;box-shadow:var(--sm)}
 .btn.alt{background:var(--bg);color:var(--gd)}`;
 
 // o: { title, desc, canon, robots, body, head, q, action, compact,
-//      status, cache }
+//      status, cache, css (extra), hidden (extra search inputs) }
 export function shell(o) {
   const search = o.compact ? '' : '<div class="slogan">'
     + 'بازار آنلاین نیازمندی‌های افغانستان</div>'
     + `<form class="search" action="${esc(o.action || '/ads')}" method="get">`
+    + (o.hidden || '')
     + `<input name="q" type="search" value="${esc(o.q || '')}" `
     + 'placeholder="جستجو در آگهی‌ها…" maxlength="60">'
     + `<button>${ic('search')}جستجو</button></form>`;
@@ -139,7 +150,7 @@ export function shell(o) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${FONT}" rel="stylesheet">
-${o.head || ''}<style>${CSS}</style></head><body>${SPRITE}
+${o.head || ''}<style>${CSS}${o.css || ''}</style></head><body>${SPRITE}
 <header class="top"><div class="row"><a class="logo" href="/">پیدا
 <small>PEYDA</small></a><a class="pill" href="https://t.me/${BOT}"
 rel="nofollow">${ic('plus')}ثبت آگهی</a></div>${search}</header>
