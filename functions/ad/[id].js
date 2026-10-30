@@ -14,16 +14,17 @@ import {
 const MAX_PHOTOS = 10;
 
 function jsonLd(r, canon, imgs, cat, sold) {
+  const hasPrice = r.price != null;
   const ld = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
+    '@type': hasPrice ? 'Product' : 'WebPage',
     name: r.title,
     description: String(r.description).replace(/\s+/g, ' ').slice(0, 500),
-    category: cat,
     url: canon,
   };
+  if (hasPrice && cat) ld.category = cat;
   if (imgs.length) ld.image = imgs;
-  if (r.price != null) {
+  if (hasPrice) {
     ld.offers = {
       '@type': 'Offer',
       priceCurrency: 'AFN',
