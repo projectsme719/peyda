@@ -1,6 +1,6 @@
 /**
  * @file cf/style.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-30
  * Site CSS: neutral shadcn-style theme (light + dark) and components.
  * Colors are the given oklch palette converted to HEX (old phones).
@@ -45,13 +45,11 @@ main{max-width:900px;margin:0 auto;padding:14px 14px 24px}
 h1{font-size:17px;margin:6px 2px 12px;display:flex;align-items:center;
 gap:8px}
 h2{font-size:15px;margin:0 0 8px}
-.cats{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;
-scroll-snap-type:x proximity;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.cat{display:inline-flex;align-items:center;gap:6px;flex:none;
-min-height:42px;padding:0 14px;border:1px solid var(--border);
-border-radius:99px;background:var(--card);font-size:14px;
-white-space:nowrap;scroll-snap-align:start}
+.cats{display:grid;gap:6px;padding:0 0 12px;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.cat{display:flex;align-items:center;justify-content:center;gap:5px;
+min-height:40px;padding:0 10px;border:1px solid var(--border);
+border-radius:99px;background:var(--card);font-size:13px}
 .cat.on{background:var(--primary);color:var(--primary-foreground);
 border-color:var(--primary)}
 .seg{display:flex;gap:4px;margin:0 0 14px;overflow-x:auto;
@@ -127,6 +125,11 @@ padding:0 14px;border-radius:99px;background:var(--muted);font-size:13px}
 .foot{text-align:center;font-size:13px;color:var(--muted-foreground);
 padding:0 14px calc(90px + env(safe-area-inset-bottom,0px))}
 .foot a{text-decoration:underline}
+.soc{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+margin-bottom:12px}
+.soc a{display:inline-flex;align-items:center;gap:6px;min-height:40px;
+padding:0 14px;border:1px solid var(--border);border-radius:99px;
+background:var(--card);color:var(--foreground);text-decoration:none}
 .bnav{position:fixed;inset-inline:0;bottom:0;z-index:30;
 background:var(--background);border-top:1px solid var(--border);
 padding-bottom:env(safe-area-inset-bottom,0px)}
