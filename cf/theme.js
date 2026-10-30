@@ -1,11 +1,12 @@
 /**
  * @file cf/theme.js
- * @version 2.0.0
+ * @version 2.1.0
  * @updated 2026-10-30
  * Page shell (top bar, bottom menu like the Mini App) and helpers.
  */
 import { SPRITE, ic } from './icons.js';
 import { CSS } from './style.js';
+import { SOCIAL } from './social.js';
 
 export const BOT = 'PEYDA_YaarBot';
 export const DEALS = {
@@ -32,6 +33,20 @@ export const ago = (t) => {
 
 const FONT = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;'
   + '700&family=Vazirmatn:wght@400;500;700;800&display=swap';
+
+// Social pages / support contacts; entries left empty in social.js are hidden.
+function socials() {
+  const wa = String(SOCIAL.whatsapp || '').replace(/\D/g, '');
+  const list = [
+    ['facebook', 'فیسبوک', SOCIAL.facebook],
+    ['instagram', 'اینستاگرام', SOCIAL.instagram],
+    ['mail', 'ایمیل پشتیبانی', SOCIAL.email && 'mailto:' + SOCIAL.email],
+    ['call', 'واتساپ', wa && 'https://wa.me/' + wa],
+  ].filter((x) => x[2]);
+  return list.length ? '<div class="soc">' + list.map(([i, t, h]) =>
+    `<a href="${esc(h)}" rel="noopener nofollow">${ic(i)}${t}</a>`)
+    .join('') + '</div>' : '';
+}
 
 // Same 5 items as the Mini App menu. Chats, saved and profile need a
 // Telegram login, so they open the bot.
@@ -89,7 +104,8 @@ ${o.head || ''}<style>${CSS}${o.css || ''}</style></head><body>${SPRITE}
 <small>بازار آنلاین نیازمندی‌های افغانستان</small></a>${search}</div>
 </header>
 <main>${o.body}</main>
-<footer class="foot"><a href="/about">دربارهٔ پیدا و راهنما</a></footer>
+<footer class="foot">${socials()}<a href="/about">دربارهٔ پیدا و راهنما</a>
+</footer>
 ${bottomNav(tab)}
 </body></html>`;
 
