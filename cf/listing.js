@@ -1,9 +1,9 @@
 /**
  * @file cf/listing.js
- * @version 3.1.0
+ * @version 4.1.0
  * @updated 2026-10-30
- * Server-rendered list pages: /, /ads and /c/<category> with search,
- * sort, province/price/deal/condition filters and category grid.
+ * Server-rendered list pages: /, /ads, /c/<cat>, /p/<prov>, /shop/<name>
+ * with search, sort, filters and the category grid (Mini App look).
  */
 import { parseList, toInt, normalize } from './lib.js';
 import { searchAds, SORTS } from './query.js';
@@ -12,7 +12,7 @@ import {
   shell, esc, fa, money, loc, ago, DEALS, CONDS,
 } from './theme.js';
 import {
-    PROVS, PROV_SLUGS, FILTER_CSS, filterBox, chips, hidden,
+    PROVS, PROV_SLUGS, SELLERS, filterBox, chips, hidden,
 } from './filters.js';
 
 const SORT_NAMES = { new: 'جدیدترین', cheap: 'ارزان‌ترین', exp: 'گران‌ترین' };
@@ -49,23 +49,26 @@ function card(r) {
       : `<div class="ph">${ic('image')}</div>`)
     + `<div class="cb"><h3>${esc(r.title)}</h3>`
     + `<div class="pr">${money(r.price)}</div>`
-    + (where ? `<div class="mt">${ic('pin')}${esc(where)}</div>` : '')
-    + (time ? `<div class="mt">${time}</div>` : '')
+    + (where || time
+      ? `<div class="mt">${where ? ic('pin') + esc(where) : ''}`
+        + `${where && time ? ' · ' : ''}${time}</div>`
+      : '')
     + (tags.length ? `<div class="tags">${tags.join('')}</div>` : '')
     + '</div></a>';
 }
 
 function catGrid(category) {
-  return '<div class="cats">' + CATS.map((c) => {
+  return '<nav class="cats" aria-label="دسته‌ها">' + CATS.map((c) => {
     const on = c.k === category;
     const to = on ? '/ads' : '/c/' + c.k;
     return `<a class="cat${on ? ' on' : ''}" href="${to}">`
-      + `<span class="ci">${ic(c.i)}</span>${esc(c.n)}</a>`;
-  }).join('') + '</div>';
+      + `${ic(c.i)}${esc(c.n)}</a>`;
+  }).join('') + '</nav>';
 }
 
+// fixed = province name (/p/<prov> pages); shop = shop name (/shop/<name>).
 export async function renderListing({
-  request, env, category, province: fixed = '',
+  request, env, category, province: fixed = '', shop = '',
 }) {
   const url = new URL(request.url);
   const site = String(env.SITE_URL || url.origin).replace(/\/+$/, '');
@@ -88,32 +91,36 @@ export async function renderListing({
   const maxPrice = num(get('maxPrice'));
   const deal = DEALS[get('deal')] ? get('deal') : '';
   const cond = CONDS[get('cond')] ? get('cond') : '';
+  const seller = !shop && SELLERS[get('seller')] ? get('seller') : '';
   const sp = new URLSearchParams({
-    q, sort, province, minPrice, maxPrice, deal, cond, page: get('page'),
+    q, sort, province, minPrice, maxPrice, deal, cond, seller,
+    shopName: shop, page: get('page'),
   });
-  const base = fixed ? `/p/${PROV_SLUGS[fixed]}`
-    : (category ? `/c/${category}` : '/ads');
+  const base = shop ? '/shop/' + encodeURIComponent(shop)
+    : fixed ? `/p/${PROV_SLUGS[fixed]}`
+      : (category ? `/c/${category}` : '/ads');
   const { rows, total, pages, page } = await searchAds(env, sp, category);
 
   const flt = {
-    province: fixed ? '' : province, minPrice, maxPrice, deal, cond,
+    province: fixed ? '' : province, minPrice, maxPrice, deal, cond, seller,
   };
   const sortKey = sort === 'new' ? '' : sort;
   const keep = { q, sort: sortKey, ...flt };
   const plain = !q && !sortKey && !Object.values(flt).some(Boolean);
   const name = catName(category);
-  const h1 = q ? `نتیجهٔ جستجو برای «${q}»`
+  const h1 = shop ? `دوکان ${shop}` : q ? `نتیجهٔ جستجو برای «${q}»`
     : (fixed ? `آگهی‌های ${fixed}`
       : (category ? `آگهی‌های ${name}` : 'همهٔ آگهی‌ها'));
   const suffix = page > 1 ? ` - صفحهٔ ${fa(page)}` : '';
-  const title = fixed ? `${h1}${suffix} | پیدا`
+  const title = shop || fixed ? `${h1}${suffix} | پیدا`
     : `${h1} در افغانستان${suffix} | پیدا`;
   const what = category ? 'در دستهٔ ' + name : 'نیازمندی';
-  const desc = fixed
-    ? `${fa(total)} آگهی در ${fixed} افغانستان. خرید و فروش موتر، `
-      + `خانه، موبایل و بیشتر در ${fixed}.`
-    : `${fa(total)} آگهی ${what} در افغانستان. `
-      + 'خرید و فروش موتر، خانه، موبایل و بیشتر در پیدا.';
+  const desc = shop ? `${fa(total)} آگهی از دوکان ${shop} در پیدا.`
+    : fixed
+      ? `${fa(total)} آگهی در ${fixed} افغانستان. خرید و فروش موتر، `
+        + `خانه، موبایل و بیشتر در ${fixed}.`
+      : `${fa(total)} آگهی ${what} در افغانستان. `
+        + 'خرید و فروش موتر، خانه، موبایل و بیشتر در پیدا.';
   const pg = page > 1 ? page : '';
   const canon = site + (plain ? href(base, { page: pg }) : base);
 
@@ -124,6 +131,7 @@ export async function renderListing({
   if (maxPrice) used.push(['تا ' + money(maxPrice), off('maxPrice')]);
   if (deal) used.push([DEALS[deal], off('deal')]);
   if (cond) used.push([CONDS[cond], off('cond')]);
+  if (seller) used.push([SELLERS[seller], off('seller')]);
 
   const seg = '<div class="seg">' + Object.keys(SORT_NAMES).map((k) =>
     `<a class="${k === sort ? 'on' : ''}" `
@@ -141,15 +149,16 @@ export async function renderListing({
     : '';
 
   const box = filterBox({
-    base: fixed ? '/ads' : base, ...flt, province,
+    base: fixed ? '/ads' : base, ...flt, province, noSeller: !!shop,
     closed: !!fixed, keep: { q, sort: sortKey }, reset: href(base, { q }),
   });
-  const foot = plain && !category && !fixed
-    ? '<h2 class="mt">آگهی‌ها به تفکیک ولایت</h2><div class="chips">'
+  const gone = shop && !total && plain;
+  const foot = plain && !category && !fixed && !shop
+    ? '<h2>آگهی‌ها به تفکیک ولایت</h2><div class="chips">'
       + PROVS.map((p) => `<a class="chip" href="/p/${PROV_SLUGS[p]}">`
         + `${esc(p)}</a>`).join('') + '</div>'
     : '';
-  const body = catGrid(category) + box + chips(used)
+  const body = (shop ? '' : catGrid(category)) + box + chips(used)
     + `<h1>${esc(h1)} <span class="mt">(${fa(total)})</span></h1>${seg}`
     + (total
       ? `<div class="grid">${rows.map(card).join('')}</div>${pager}`
@@ -157,7 +166,8 @@ export async function renderListing({
     + foot;
 
   return shell({
-    title, desc, canon, body, q, action: base, css: FILTER_CSS,
+    title, desc, canon, body, q, action: base,
+    status: gone ? 404 : 200,
     hidden: hidden({ sort: sortKey, ...flt }),
     robots: total && plain ? 'index, follow' : 'noindex, follow',
     cache: plain ? undefined : 'public, max-age=60',
