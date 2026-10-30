@@ -1,6 +1,6 @@
 /**
  * @file cf/query.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-30
  * Shared ad search: used by /api/ads and the server-rendered pages.
  */
@@ -11,6 +11,9 @@ export const SORTS = {
   cheap: 'price IS NULL, price ASC, id DESC',
   exp: 'price IS NULL, price DESC, id DESC',
 };
+
+const DEALS = ['sale', 'exchange', 'rent', 'mortgage'];
+const CONDS = ['new', 'used'];
 
 const COLS =
   'id, title, price, province, city, cond, deal, shop, created, photos';
@@ -37,6 +40,11 @@ function filters(p, category) {
   if (min && min > 0) add('price >= ?', min);
   const max = toInt(normalize(p.get('maxPrice')));
   if (max && max > 0) add('price <= ?', max);
+
+  const deal = p.get('deal');
+  if (DEALS.includes(deal)) add('deal = ?', deal);
+  const cond = p.get('cond');
+  if (CONDS.includes(cond)) add('cond = ?', cond);
 
   const seller = p.get('seller');
   if (seller === 'shop') where.push('shop = 1');
