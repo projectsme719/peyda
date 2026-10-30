@@ -1,16 +1,19 @@
 /**
  * @file cf/listing.js
- * @version 2.0.0
+ * @version 3.0.0
  * @updated 2026-10-30
  * Server-rendered list pages: /, /ads and /c/<category> with search,
- * sort and category grid in the Mini App look.
+ * sort, province/price filters and category grid (Mini App look).
  */
-import { parseList } from './lib.js';
+import { parseList, toInt, normalize } from './lib.js';
 import { searchAds, SORTS } from './query.js';
 import { CATS, catName, ic } from './icons.js';
 import {
-  shell, esc, fa, money, loc, DEALS, CONDS,
+  shell, esc, fa, money, loc, ago, DEALS, CONDS,
 } from './theme.js';
+import {
+  PROVS, FILTER_CSS, filterBox, chips, hidden,
+} from './filters.js';
 
 const SORT_NAMES = { new: 'جدیدترین', cheap: 'ارزان‌ترین', exp: 'گران‌ترین' };
 
@@ -24,6 +27,12 @@ function href(base, o) {
   return base + (s ? '?' + s : '');
 }
 
+// Digits (also Persian) -> positive integer text, or ''.
+const num = (v) => {
+  const n = toInt(normalize(v));
+  return n && n > 0 ? String(n) : '';
+};
+
 function card(r) {
   const has = parseList(r.photos).length > 0;
   const tags = [];
@@ -32,6 +41,7 @@ function card(r) {
   if (DEALS[r.deal]) tag(DEALS[r.deal]);
   if (CONDS[r.cond]) tag(CONDS[r.cond]);
   const where = loc(r);
+  const time = ago(r.created);
   return `<a class="card" href="/ad/${r.id}">`
     + (has
       ? `<img class="ph" src="/api/img?id=${r.id}&i=0&t=1" `
@@ -40,6 +50,7 @@ function card(r) {
     + `<div class="cb"><h3>${esc(r.title)}</h3>`
     + `<div class="pr">${money(r.price)}</div>`
     + (where ? `<div class="mt">${ic('pin')}${esc(where)}</div>` : '')
+    + (time ? `<div class="mt">${time}</div>` : '')
     + (tags.length ? `<div class="tags">${tags.join('')}</div>` : '')
     + '</div></a>';
 }
@@ -66,16 +77,22 @@ export async function renderListing({ request, env, category }) {
     });
   }
 
-  const q = (url.searchParams.get('q') || '').trim().slice(0, 60);
-  const sort = SORTS[url.searchParams.get('sort')]
-    ? url.searchParams.get('sort') : 'new';
+  const get = (k) => url.searchParams.get(k) || '';
+  const q = get('q').trim().slice(0, 60);
+  const sort = SORTS[get('sort')] ? get('sort') : 'new';
+  const province = PROVS.includes(get('province')) ? get('province') : '';
+  const minPrice = num(get('minPrice'));
+  const maxPrice = num(get('maxPrice'));
   const sp = new URLSearchParams({
-    q, sort, page: url.searchParams.get('page') || '',
+    q, sort, province, minPrice, maxPrice, page: get('page'),
   });
   const base = category ? `/c/${category}` : '/ads';
   const { rows, total, pages, page } = await searchAds(env, sp, category);
 
-  const plain = !q && sort === 'new';
+  const flt = { province, minPrice, maxPrice };
+  const sortKey = sort === 'new' ? '' : sort;
+  const keep = { q, sort: sortKey, ...flt };
+  const plain = !q && !sortKey && !province && !minPrice && !maxPrice;
   const name = catName(category);
   const h1 = q ? `نتیجهٔ جستجو برای «${q}»`
     : (category ? `آگهی‌های ${name}` : 'همهٔ آگهی‌ها');
@@ -87,10 +104,15 @@ export async function renderListing({ request, env, category }) {
   const pg = page > 1 ? page : '';
   const canon = site + (plain ? href(base, { page: pg }) : base);
 
-  const keep = { q, sort: sort === 'new' ? '' : sort };
+  const off = (k) => href(base, { ...keep, [k]: '' });
+  const used = [];
+  if (province) used.push([province, off('province')]);
+  if (minPrice) used.push(['از ' + money(minPrice), off('minPrice')]);
+  if (maxPrice) used.push(['تا ' + money(maxPrice), off('maxPrice')]);
+
   const seg = '<div class="seg">' + Object.keys(SORT_NAMES).map((k) =>
     `<a class="${k === sort ? 'on' : ''}" `
-    + `href="${href(base, { q, sort: k === 'new' ? '' : k })}">`
+    + `href="${href(base, { ...keep, sort: k === 'new' ? '' : k })}">`
     + `${SORT_NAMES[k]}</a>`).join('') + '</div>';
 
   const link = (p) => href(base, { ...keep, page: p > 1 ? p : '' });
@@ -103,15 +125,19 @@ export async function renderListing({ request, env, category }) {
       + nav(page < pages, 'next', page + 1, 'بعدی') + '</nav>'
     : '';
 
-  const body = catGrid(category)
+  const box = filterBox({
+    base, ...flt, keep: { q, sort: sortKey }, reset: href(base, { q }),
+  });
+  const body = catGrid(category) + box + chips(used)
     + `<h1>${esc(h1)} <span class="mt">(${fa(total)})</span></h1>${seg}`
     + (total
       ? `<div class="grid">${rows.map(card).join('')}</div>${pager}`
       : `<div class="empty">${ic('search')}آگهی‌ای پیدا نشد</div>`);
 
   return shell({
-    title, desc, canon, body, q, action: base,
+    title, desc, canon, body, q, action: base, css: FILTER_CSS,
+    hidden: hidden({ sort: sortKey, ...flt }),
     robots: total && plain ? 'index, follow' : 'noindex, follow',
-    cache: q ? 'public, max-age=60' : undefined,
+    cache: plain ? undefined : 'public, max-age=60',
   });
 }
