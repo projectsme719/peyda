@@ -1,7 +1,9 @@
 /**
  * @file functions/sitemap.xml.js
- * @version 1.3.0
- * GET /sitemap.xml - home, listings, about, categories, provinces, ads.
+ * @version 1.4.0
+ * @updated 2026-10-30
+ * GET /sitemap.xml - home, listings, about, categories, provinces,
+ * shops, ads.
  */
 import { PROV_SLUGS } from '../cf/filters.js';
 
@@ -15,6 +17,10 @@ export async function onRequestGet({ request, env }) {
   const provs = await env.DB.prepare(
     "SELECT DISTINCT province FROM ads WHERE status = 'active' " +
     'AND province IS NOT NULL',
+  ).all();
+  const shops = await env.DB.prepare(
+    "SELECT DISTINCT shop_name FROM ads WHERE status = 'active' " +
+    'AND shop = 1 AND shop_name IS NOT NULL LIMIT 500',
   ).all();
   const rows = await env.DB.prepare(
     "SELECT id, updated FROM ads WHERE status = 'active' " +
@@ -35,6 +41,10 @@ export async function onRequestGet({ request, env }) {
     if (PROV_SLUGS[p.province]) {
       urls.push(`<url><loc>${site}/p/${PROV_SLUGS[p.province]}</loc></url>`);
     }
+  }
+  for (const s of shops.results) {
+    const to = encodeURIComponent(s.shop_name);
+    urls.push(`<url><loc>${site}/shop/${to}</loc></url>`);
   }
   for (const r of rows.results) {
     const day = new Date(r.updated * 1000).toISOString().slice(0, 10);
