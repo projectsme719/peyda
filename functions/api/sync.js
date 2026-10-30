@@ -7,7 +7,7 @@
  */
 import {
   json, fail, authed, readJson, toInt, normalize,
-} from '../../cf/lib.js';
+} from '../_lib/lib.js';
 
 const CONTACT = /^(@[A-Za-z0-9_]{5,32}|\+?\d{9,15})$/;
 const str = (v, max) => String(v ?? '').slice(0, max);

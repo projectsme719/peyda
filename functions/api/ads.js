@@ -7,7 +7,7 @@
  */
 import {
   json, toInt, normalize, parseList, PAGE_SIZE,
-} from '../../cf/lib.js';
+} from '../_lib/lib.js';
 
 const SORTS = {
   new: 'id DESC',

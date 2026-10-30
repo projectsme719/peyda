@@ -4,7 +4,7 @@
  * @updated 2026-10-29
  * GET /api/health - status check (used by /setsync in the bot).
  */
-import { json } from '../../cf/lib.js';
+import { json } from '../_lib/lib.js';
 
 export async function onRequestGet({ env }) {
   const out = {

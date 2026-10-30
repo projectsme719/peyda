@@ -5,7 +5,7 @@
  * GET /api/ad?id=12 - one ad (active or sold). It never returns the
  * contact or the Telegram file ids.
  */
-import { json, fail, toInt, parseList } from '../../cf/lib.js';
+import { json, fail, toInt, parseList } from '../_lib/lib.js';
 
 export async function onRequestGet({ request, env }) {
   const id = toInt(new URL(request.url).searchParams.get('id'));

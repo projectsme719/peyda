@@ -5,7 +5,7 @@
  * GET /api/contact?id=12 - seller contact, only for active ads.
  * Limited per IP per hour so numbers cannot be harvested in bulk.
  */
-import { json, fail, toInt, rateLimit } from '../../cf/lib.js';
+import { json, fail, toInt, rateLimit } from '../_lib/lib.js';
 
 const MAX_PER_HOUR = 40;
 

@@ -7,7 +7,7 @@
  * image with the BOT_TOKEN secret. Any problem returns a neutral
  * placeholder picture, so pages never show a broken image.
  */
-import { toInt, parseList } from '../../cf/lib.js';
+import { toInt, parseList } from '../_lib/lib.js';
 
 const TG = 'https://api.telegram.org/';
 
