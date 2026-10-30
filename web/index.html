@@ -210,6 +210,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
 (function () {
   var tg = (window.Telegram && window.Telegram.WebApp) || {};
   var isTg = !!(tg.initData && tg.Serverless);
+    if (isTg) { var sn = document.getElementById('seo'); if (sn) sn.remove(); }
   if (isTg) {
     try {
       tg.ready();
