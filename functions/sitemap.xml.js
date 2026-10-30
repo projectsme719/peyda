@@ -1,15 +1,20 @@
 /**
  * @file functions/sitemap.xml.js
- * @version 1.1.0
- * GET /sitemap.xml - home, listings, categories and active ads.
+ * @version 1.2.0
+ * GET /sitemap.xml - home, listings, categories, provinces, active ads.
  */
 import { PROV_SLUGS } from '../cf/filters.js';
+
 export async function onRequestGet({ request, env }) {
   const site = String(env.SITE_URL || new URL(request.url).origin)
     .replace(/\/+$/, '');
 
   const cats = await env.DB.prepare(
     "SELECT DISTINCT category FROM ads WHERE status = 'active'",
+  ).all();
+  const provs = await env.DB.prepare(
+    "SELECT DISTINCT province FROM ads WHERE status = 'active' " +
+    'AND province IS NOT NULL',
   ).all();
   const rows = await env.DB.prepare(
     "SELECT id, updated FROM ads WHERE status = 'active' " +
@@ -25,16 +30,11 @@ export async function onRequestGet({ request, env }) {
       urls.push(`<url><loc>${site}/c/${c.category}</loc></url>`);
     }
   }
-    const provs = await env.DB.prepare(
-    "SELECT DISTINCT province FROM ads WHERE status = 'active' " +
-    'AND province IS NOT NULL',
-  ).all();
   for (const p of provs.results) {
     if (PROV_SLUGS[p.province]) {
       urls.push(`<url><loc>${site}/p/${PROV_SLUGS[p.province]}</loc></url>`);
     }
   }
-
   for (const r of rows.results) {
     const day = new Date(r.updated * 1000).toISOString().slice(0, 10);
     urls.push(
