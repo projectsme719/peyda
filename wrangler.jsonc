@@ -1,9 +1,0 @@
-{
-  "name": "peyda",
-  "main": "src/index.js",
-  "compatibility_date": "2026-10-01",
-  "vars": { "SITE_URL": "https://app.peydaaf.kdns.fr" },
-  "d1_databases": [
-    { "binding": "DB", "database_name": "peyda", "database_id": "ID_fa7ed8d2-70f5-44a0-beaf-1a2863e2c974" }
-  ]
-}
