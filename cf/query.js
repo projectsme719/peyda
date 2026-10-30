@@ -1,6 +1,6 @@
 /**
  * @file cf/query.js
- * @version 1.1.0
+ * @version 1.2.0
  * @updated 2026-10-30
  * Shared ad search: used by /api/ads and the server-rendered pages.
  */
@@ -45,6 +45,12 @@ function filters(p, category) {
   if (DEALS.includes(deal)) add('deal = ?', deal);
   const cond = p.get('cond');
   if (CONDS.includes(cond)) add('cond = ?', cond);
+
+  const shopName = p.get('shopName');
+  if (shopName) {
+    where.push('shop = 1');
+    add('shop_name = ?', shopName.slice(0, 60));
+  }
 
   const seller = p.get('seller');
   if (seller === 'shop') where.push('shop = 1');
