@@ -140,6 +140,7 @@ export function shell(o) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(o.title)}</title>
+<meta name="google-site-verification" content="-EYHx7NDg4qhC3CWp0vYSDhnFMLv60tMHGlqbd01LNs" />
 <meta name="description" content="${esc(o.desc)}">
 <meta name="robots" content="${o.robots}">
 <link rel="canonical" href="${esc(o.canon)}">
