@@ -772,7 +772,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
   }
 
   function syncBack() {
-    if (!tg.BackButton) return;
+    if (!isTg || !tg.BackButton) return;
     const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden') ||
       !composer.classList.contains('hidden') || !chatEl.classList.contains('hidden');
     if (open) tg.BackButton.show(); else tg.BackButton.hide();
