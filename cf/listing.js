@@ -1,9 +1,9 @@
 /**
  * @file cf/listing.js
- * @version 3.0.0
+ * @version 3.1.0
  * @updated 2026-10-30
  * Server-rendered list pages: /, /ads and /c/<category> with search,
- * sort, province/price filters and category grid (Mini App look).
+ * sort, province/price/deal/condition filters and category grid.
  */
 import { parseList, toInt, normalize } from './lib.js';
 import { searchAds, SORTS } from './query.js';
@@ -83,16 +83,18 @@ export async function renderListing({ request, env, category }) {
   const province = PROVS.includes(get('province')) ? get('province') : '';
   const minPrice = num(get('minPrice'));
   const maxPrice = num(get('maxPrice'));
+  const deal = DEALS[get('deal')] ? get('deal') : '';
+  const cond = CONDS[get('cond')] ? get('cond') : '';
   const sp = new URLSearchParams({
-    q, sort, province, minPrice, maxPrice, page: get('page'),
+    q, sort, province, minPrice, maxPrice, deal, cond, page: get('page'),
   });
   const base = category ? `/c/${category}` : '/ads';
   const { rows, total, pages, page } = await searchAds(env, sp, category);
 
-  const flt = { province, minPrice, maxPrice };
+  const flt = { province, minPrice, maxPrice, deal, cond };
   const sortKey = sort === 'new' ? '' : sort;
   const keep = { q, sort: sortKey, ...flt };
-  const plain = !q && !sortKey && !province && !minPrice && !maxPrice;
+  const plain = !q && !sortKey && !Object.values(flt).some(Boolean);
   const name = catName(category);
   const h1 = q ? `نتیجهٔ جستجو برای «${q}»`
     : (category ? `آگهی‌های ${name}` : 'همهٔ آگهی‌ها');
@@ -109,6 +111,8 @@ export async function renderListing({ request, env, category }) {
   if (province) used.push([province, off('province')]);
   if (minPrice) used.push(['از ' + money(minPrice), off('minPrice')]);
   if (maxPrice) used.push(['تا ' + money(maxPrice), off('maxPrice')]);
+  if (deal) used.push([DEALS[deal], off('deal')]);
+  if (cond) used.push([CONDS[cond], off('cond')]);
 
   const seg = '<div class="seg">' + Object.keys(SORT_NAMES).map((k) =>
     `<a class="${k === sort ? 'on' : ''}" `
