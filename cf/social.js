@@ -10,6 +10,6 @@
 export const SOCIAL = {
   facebook: 'https://www.facebook.com/share/1A2V879net/?mibextid=wwXIfr',
   instagram: 'https://www.instagram.com/peyda.af/',
-  email: '',
+  email: 'mailto:peyda.help@gmail.com',
   whatsapp: '',
 };
