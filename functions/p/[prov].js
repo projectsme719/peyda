@@ -1,6 +1,7 @@
 /**
  * @file functions/p/[prov].js
  * @version 1.0.0
+ * @updated 2026-10-30
  * GET /p/kabul - active ads of one province (server-rendered).
  */
 import { renderListing } from '../../cf/listing.js';
