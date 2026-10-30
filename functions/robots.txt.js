@@ -1,6 +1,7 @@
 /**
  * @file functions/robots.txt.js
  * @version 1.0.0
+ * @updated 2026-10-30
  * GET /robots.txt
  */
 export async function onRequestGet({ request, env }) {
