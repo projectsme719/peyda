@@ -193,18 +193,16 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
 
 <script>
 (function () {
-  var tg = window.Telegram && window.Telegram.WebApp;
-  // خارج از تلگرام: صفحه ساده و بدون خطا
-  if (!tg || !tg.initData || !tg.Serverless) {
-    document.body.innerHTML = '<div style="min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;font-family:Vazirmatn,system-ui,sans-serif;background:#EEF1F6;color:#1F2937"><div><h1 style="color:#006644;margin:8px 0">پیدا | PEYDA</h1><p>بازار آنلاین نیازمندی‌های افغانستان</p><p style="color:#6B7280">این برنامه فعلاً فقط داخل تلگرام باز می‌شود.</p><a href="https://t.me/PEYDA_YaarBot" style="display:inline-block;background:#00B894;color:#fff;padding:12px 24px;border-radius:14px;text-decoration:none;font-weight:700">باز کردن در تلگرام</a></div></div>';
-    return;
+  var tg = (window.Telegram && window.Telegram.WebApp) || {};
+  var isTg = !!(tg.initData && tg.Serverless);
+  if (isTg) {
+    try {
+      tg.ready();
+      tg.expand();
+      tg.setHeaderColor('#006644'); tg.setBackgroundColor('#EEF1F6'); tg.setBottomBarColor('#EEF1F6');
+      if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+    } catch (e) {}
   }
-  tg.ready();
-  tg.expand();
-  try {
-    tg.setHeaderColor('#006644'); tg.setBackgroundColor('#EEF1F6'); tg.setBottomBarColor('#EEF1F6');
-    if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
-  } catch (e) {}
 
   const CATS = [
     { k: 'realestate', n: 'خانه و املاک', i: 'home' },
@@ -280,7 +278,73 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
   }
 
   const call = (name, input) => new Promise((resolve, reject) => {
-    tg.Serverless.call(name, input || {}, (err, data) => (err ? reject(err) : resolve(data)));
+    if (isTg) {
+      tg.Serverless.call(name, input || {}, (err, data) => (err ? reject(err) : resolve(data)));
+      return;
+    }
+    input = input || {};
+    if (name === 'config') {
+      resolve({
+        cfg: {
+          realestate: { fields: [{ k: 'rooms', l: 'تعداد اتاق', t: 'select', o: ['۱', '۲', '۳', '۴+'] }], cond: false, deals: ['sale', 'rent', 'mortgage'] },
+          vehicles: { fields: [{ k: 'year', l: 'سال ساخت', t: 'num' }], cond: true, deals: ['sale', 'exchange'] },
+          mobile: { fields: [], cond: true, deals: ['sale', 'exchange'] },
+          computer: { fields: [], cond: true, deals: ['sale', 'exchange'] },
+          home: { fields: [], cond: true, deals: ['sale', 'exchange'] },
+          jobs: { fields: [], cond: false, deals: [] },
+          services: { fields: [], cond: false, deals: [] },
+          fashion: { fields: [], cond: true, deals: ['sale'] },
+          pets: { fields: [], cond: false, deals: ['sale'] },
+          other: { fields: [], cond: true, deals: ['sale', 'exchange'] }
+        },
+        deals: { sale: 'فروشی', exchange: 'معاوضه', rent: 'کرایه', mortgage: 'گروی' },
+        conds: { new: 'جدید', used: 'مستعمل' }
+      });
+      return;
+    }
+    if (name === 'ads') {
+      const q = new URLSearchParams();
+      if (input.q) q.set('q', input.q);
+      if (input.category) q.set('category', input.category);
+      if (input.province) q.set('province', input.province);
+      if (input.minPrice) q.set('minPrice', input.minPrice);
+      if (input.maxPrice) q.set('maxPrice', input.maxPrice);
+      if (input.sort) q.set('sort', input.sort);
+      if (input.seller) q.set('seller', input.seller);
+      if (input.page) q.set('page', input.page);
+      fetch('/api/ads?' + q.toString())
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error('خطا در دریافت آگهی‌ها'))))
+        .then(resolve).catch(reject);
+      return;
+    }
+    if (name === 'ad') {
+      fetch('/api/ad?id=' + encodeURIComponent(input.id))
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error('آگهی پیدا نشد'))))
+        .then((data) => {
+          fetch('/api/contact?id=' + encodeURIComponent(input.id))
+            .then((r) => (r.ok ? r.json() : { contact: null }))
+            .then((cr) => { data.contact = cr.contact || null; resolve(data); })
+            .catch(() => { resolve(data); });
+        }).catch(reject);
+      return;
+    }
+    if (name === 'photo') {
+      resolve({ src: '/api/img?id=' + encodeURIComponent(input.id) + '&i=' + encodeURIComponent(input.i || 0) + '&t=' + (input.t ? '1' : '0') });
+      return;
+    }
+    if (name === 'canPost') {
+      resolve({ ok: true, limit: 10, used: 0, isShop: false });
+      return;
+    }
+    if (name === 'myAds' || name === 'bookmarks' || name === 'chatList') {
+      resolve({ items: [], page: 1, pages: 1, total: 0, unread: 0 });
+      return;
+    }
+    if (name === 'me') {
+      resolve({ isShop: false, shopName: null, limit: 10, used: 0 });
+      return;
+    }
+    reject(new Error('این قابلیت خارج از تلگرام محدود می‌باشد'));
   });
   const errCode = (e) => (e && e.parameters && e.parameters.code) || '';
 
@@ -448,12 +512,14 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
 
   // ---------- صفحه چت ----------
   function sizeChat() { chatEl.style.height = (tg.viewportHeight || window.innerHeight) + 'px'; }
-  tg.onEvent('viewportChanged', () => {
-    if (chatEl.classList.contains('hidden')) return;
-    sizeChat();
-    const m = $('#msgs');
-    if (m) m.scrollTop = m.scrollHeight;
-  });
+  if (tg.onEvent) {
+    tg.onEvent('viewportChanged', () => {
+      if (chatEl.classList.contains('hidden')) return;
+      sizeChat();
+      const m = $('#msgs');
+      if (m) m.scrollTop = m.scrollHeight;
+    });
+  }
 
   async function startChat(adId) {
     try {
@@ -571,9 +637,13 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
     if (!C.meta || !C.meta.blocked) buttons.push({ id: 'block', type: 'default', text: 'بستن گفتگو' });
     buttons.push({ id: 'report', type: 'destructive', text: 'گزارش گفتگو' });
     buttons.push({ type: 'cancel' });
-    tg.showPopup({ message: 'گزینه‌های گفتگو', buttons: buttons }, (id) => {
-      if (id === 'block' || id === 'report') chatAct(id);
-    });
+    if (tg.showPopup) {
+      tg.showPopup({ message: 'گزینه‌های گفتگو', buttons: buttons }, (id) => {
+        if (id === 'block' || id === 'report') chatAct(id);
+      });
+    } else {
+      if (confirm('آیا می‌خواهید این گفتگو را ببندید یا گزارش دهید؟')) chatAct('block');
+    }
   }
 
   // ---------- نشان‌شده‌ها ----------
@@ -682,7 +752,11 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
       }
     };
     if (action === 'delete') {
-      tg.showConfirm('این آگهی حذف شود؟ (از کانال هم پاک می‌شود)', (ok) => { if (ok) run(); });
+      if (tg.showConfirm) {
+        tg.showConfirm('این آگهی حذف شود؟ (از کانال هم پاک می‌شود)', (ok) => { if (ok) run(); });
+      } else if (confirm('این آگهی حذف شود؟ (از کانال هم پاک می‌شود)')) {
+        run();
+      }
     } else {
       run();
     }
@@ -698,6 +772,7 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
   }
 
   function syncBack() {
+    if (!isTg || !tg.BackButton) return;
     const open = !sheet.classList.contains('hidden') || !detail.classList.contains('hidden') ||
       !composer.classList.contains('hidden') || !chatEl.classList.contains('hidden');
     if (open) tg.BackButton.show(); else tg.BackButton.hide();
@@ -1020,12 +1095,24 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
     if (d.bm) { toggleBm(Number(d.bm)); return; }
     if (d.share) {
       const link = 'https://t.me/' + BOT + '?start=ad_' + d.share;
-      tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(d.t || ''));
+      const shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(d.t || '');
+      if (tg.openTelegramLink) tg.openTelegramLink(shareUrl); else window.open(shareUrl, '_blank');
       return;
     }
-    if (d.tg) { tg.openTelegramLink('https://t.me/' + d.tg); return; }
-    if (d.wa) { tg.openLink('https://wa.me/' + d.wa); return; }
-    if (d.url) { tg.openTelegramLink(d.url); return; }
+    if (d.tg) {
+      const url = 'https://t.me/' + d.tg;
+      if (tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+      return;
+    }
+    if (d.wa) {
+      const url = 'https://wa.me/' + d.wa;
+      if (tg.openLink) tg.openLink(url); else window.open(url, '_blank');
+      return;
+    }
+    if (d.url) {
+      if (tg.openTelegramLink) tg.openTelegramLink(d.url); else window.open(d.url, '_blank');
+      return;
+    }
     if (d.more) { S.page += 1; loadList(false); return; }
     if (d.smore) { SV.page += 1; loadSaved(false); return; }
     if (d.rm) {
@@ -1069,17 +1156,27 @@ label.chk input{width:20px;height:20px;margin:0;accent-color:var(--g)}
       case 'chatsend': sendChat(); break;
       case 'chatmenu': chatMenu(); break;
       case 'chatunblock': chatAct('unblock'); break;
-      case 'bot': tg.openTelegramLink('https://t.me/' + BOT); break;
-      case 'channel': tg.openTelegramLink('https://t.me/PeydaAds'); break;
+      case 'bot': {
+        const url = 'https://t.me/' + BOT;
+        if (tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+        break;
+      }
+      case 'channel': {
+        const url = 'https://t.me/PeydaAds';
+        if (tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
+        break;
+      }
     }
   });
 
-  tg.BackButton.onClick(() => {
-    if (!sheet.classList.contains('hidden')) closeSheet();
-    else if (!chatEl.classList.contains('hidden')) closeChat();
-    else if (!detail.classList.contains('hidden')) closeAd();
-    else if (!composer.classList.contains('hidden')) closeComposer();
-  });
+  if (tg.BackButton && tg.BackButton.onClick) {
+    tg.BackButton.onClick(() => {
+      if (!sheet.classList.contains('hidden')) closeSheet();
+      else if (!chatEl.classList.contains('hidden')) closeChat();
+      else if (!detail.classList.contains('hidden')) closeAd();
+      else if (!composer.classList.contains('hidden')) closeComposer();
+    });
+  }
 
   // نشان گفتگوی نخوانده: هر ۲۵ ثانیه
   setInterval(() => {
