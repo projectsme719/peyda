@@ -1,6 +1,7 @@
 /**
  * @file functions/api/health.js
  * @version 1.2.0
+ * @updated 2026-10-30
  * GET /api/health - status check (used by /setsync in the bot).
  */
 import { json } from '../../cf/lib.js';
