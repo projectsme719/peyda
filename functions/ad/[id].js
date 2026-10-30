@@ -5,6 +5,7 @@
  * GET /ad/12 - server-rendered ad page in the Mini App look
  * (HTML, meta tags, JSON-LD).
  */
+import { PROV_SLUGS } from '../../cf/filters.js';
 import { toInt, parseList } from '../../cf/lib.js';
 import { catName, ic } from '../../cf/icons.js';
 import {
@@ -99,9 +100,13 @@ export async function onRequestGet({ request, env, params }) {
       + `${i ? ' loading="lazy"' : ''}>`).join('') + '</div>'
     : '';
 
-  const more = cat
-    ? `<div class="box"><a href="/c/${r.category}">`
-      + `آگهی‌های بیشتر در ${esc(cat)}</a></div>`
+    const ps = PROV_SLUGS[r.province];
+  const more = (cat || ps)
+    ? '<div class="box">'
+      + (cat ? `<a href="/c/${r.category}">آگهی‌های بیشتر در ${esc(cat)}</a>` : '')
+      + (cat && ps ? ' · ' : '')
+      + (ps ? `<a href="/p/${ps}">آگهی‌های ${esc(r.province)}</a>` : '')
+      + '</div>'
     : '';
 
   const body = `<article>${gal}
