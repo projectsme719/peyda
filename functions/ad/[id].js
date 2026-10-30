@@ -112,7 +112,9 @@ ${imgs.length ? '<div class="card ph">' + imgs.map((s, i) =>
 <div class="card"><h2>توضیحات</h2><p>${esc(r.description)}</p></div>
 <div class="card btns">
 <a class="btn" href="https://t.me/${BOT}?start=ad_${r.id}" rel="nofollow">تماس و گفتگو در تلگرام</a>
-<a class="btn alt" href="/?ad=${r.id}" rel="nofollow">باز کردن در وب‌اپ</a></div></article>`;
+<a class="btn alt" href="/?ad=${r.id}" rel="nofollow">باز کردن در وب‌باز کردن در وب‌اپ</a></div>
+${cat ? `<div class="card"><a href="/c/${r.category}">آگهی‌های بیشتر در ${esc(cat)}</a> · <a href="/ads">همهٔ آگهی‌ها</a></div>` : ''}</article>`;
+
 
   return new Response(page({
     title: `${r.title}${loc ? ' - ' + loc : ''} | پیدا`, desc, canon, robots: 'index, follow', body, head,
