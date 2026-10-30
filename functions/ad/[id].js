@@ -1,6 +1,6 @@
 /**
  * @file functions/ad/[id].js
- * @version 2.0.0
+ * @version 2.1.0
  * @updated 2026-10-30
  * GET /ad/12 - server-rendered ad page in the Mini App look
  * (HTML, meta tags, JSON-LD).
@@ -8,7 +8,7 @@
 import { toInt, parseList } from '../../cf/lib.js';
 import { catName, ic } from '../../cf/icons.js';
 import {
-  shell, esc, fa, money, loc, BOT, DEALS, CONDS,
+  shell, esc, fa, money, loc, ago, BOT, DEALS, CONDS,
 } from '../../cf/theme.js';
 
 const MAX_PHOTOS = 10;
@@ -106,7 +106,8 @@ export async function onRequestGet({ request, env, params }) {
   const body = `<article>${gal}
 <div class="box">${sold ? '<span class="sold">فروخته شد</span>' : ''}
 <h1>${esc(r.title)}</h1><div class="pr big">${money(r.price)}</div>
-${where ? `<div class="mt">${ic('pin')}${esc(where)}</div>` : ''}</div>
+${where ? `<div class="mt">${ic('pin')}${esc(where)}</div>` : ''}
+${r.created ? `<div class="mt">${ago(r.created)}</div>` : ''}</div>
 <div class="box"><dl>${details(r, cat, where)}</dl></div>
 <div class="box"><h2>توضیحات</h2><p>${esc(r.description)}</p></div>
 <div class="box btns">
