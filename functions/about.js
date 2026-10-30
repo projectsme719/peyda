@@ -93,8 +93,8 @@ export const onRequestGet = ({ request, env }) => {
       + 'آگهی، جستجو، فیلتر و نکات امنیتی خرید و فروش.',
     canon: site + '/about', robots: 'index, follow', compact: true,
     body: BODY,
-    css: '.box ol,.box ul{margin:6px 0;padding-inline-start:22px;'
-      + 'line-height:2}.box a:not(.btn){color:var(--gd);font-weight:700}',
-    cache: 'public, max-age=3600, s-maxage=86400',
+        css: '.box ol,.box ul{margin:6px 0;padding-inline-start:22px;'
+      + 'line-height:2}.box a:not(.btn){color:var(--gd);font-weight:700}'
+      + '.box p{white-space:normal}',
   });
 };
