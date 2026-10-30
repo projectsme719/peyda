@@ -11,12 +11,14 @@ export async function onRequestGet({ request, env }) {
     'ORDER BY id DESC LIMIT 5000',
   ).all();
 
-  const urls = [`<url><loc>${site}/</loc></url>`];
-  for (const r of rows.results) {
-    const day = new Date(r.updated * 1000).toISOString().slice(0, 10);
-    urls.push(
-      `<url><loc>${site}/ad/${r.id}</loc><lastmod>${day}</lastmod></url>`,
-    );
+    const cats = await env.DB.prepare(
+    "SELECT DISTINCT category FROM ads WHERE status = 'active'",
+  ).all();
+  const urls = [`<url><loc>${site}/</loc></url>`, `<url><loc>${site}/ads</loc></url>`];
+  for (const c of cats.results) {
+    if (/^[a-z]{2,20}$/.test(c.category)) {
+      urls.push(`<url><loc>${site}/c/${c.category}</loc></url>`);
+    }
   }
   const xml =
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
