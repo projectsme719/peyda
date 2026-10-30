@@ -1,6 +1,6 @@
 /**
  * @file cf/listing.js
- * @version 4.1.0
+ * @version 4.2.0
  * @updated 2026-10-30
  * Server-rendered list pages: /, /ads, /c/<cat>, /p/<prov>, /shop/<name>
  * with search, sort, filters and the category grid (Mini App look).
@@ -126,6 +126,8 @@ export async function renderListing({
 
   const off = (k) => href(base, { ...keep, [k]: '' });
   const used = [];
+  // On a province page the chip is the easy way back to all provinces.
+  if (fixed) used.push([fixed, href('/ads', keep)]);
   if (province && !fixed) used.push([province, off('province')]);
   if (minPrice) used.push(['از ' + money(minPrice), off('minPrice')]);
   if (maxPrice) used.push(['تا ' + money(maxPrice), off('maxPrice')]);
@@ -153,17 +155,11 @@ export async function renderListing({
     closed: !!fixed, keep: { q, sort: sortKey }, reset: href(base, { q }),
   });
   const gone = shop && !total && plain;
-  const foot = plain && !category && !fixed && !shop
-    ? '<h2>آگهی‌ها به تفکیک ولایت</h2><div class="chips">'
-      + PROVS.map((p) => `<a class="chip" href="/p/${PROV_SLUGS[p]}">`
-        + `${esc(p)}</a>`).join('') + '</div>'
-    : '';
   const body = (shop ? '' : catGrid(category)) + box + chips(used)
     + `<h1>${esc(h1)} <span class="mt">(${fa(total)})</span></h1>${seg}`
     + (total
       ? `<div class="grid">${rows.map(card).join('')}</div>${pager}`
-      : `<div class="empty">${ic('search')}آگهی‌ای پیدا نشد</div>`)
-    + foot;
+      : `<div class="empty">${ic('search')}آگهی‌ای پیدا نشد</div>`);
 
   return shell({
     title, desc, canon, body, q, action: base,
