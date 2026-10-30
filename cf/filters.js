@@ -14,6 +14,24 @@ export const PROVS = [
   'ارزگان', 'پکتیا', 'پکتیکا', 'خوست', 'کنر', 'لغمان', 'لوگر',
   'میدان وردک', 'نورستان', 'سمنگان', 'تخار', 'بدخشان',
 ];
+export const PROV_SLUGS = {
+  'کابل': 'kabul', 'هرات': 'herat', 'بلخ': 'balkh',
+  'قندهار': 'kandahar', 'ننگرهار': 'nangarhar', 'کندز': 'kunduz',
+  'بغلان': 'baghlan', 'غزنی': 'ghazni', 'پروان': 'parwan',
+  'کاپیسا': 'kapisa', 'پنجشیر': 'panjshir', 'بامیان': 'bamyan',
+  'دایکندی': 'daykundi', 'غور': 'ghor', 'هلمند': 'helmand',
+  'جوزجان': 'jawzjan', 'سرپل': 'sar-e-pol', 'فاریاب': 'faryab',
+  'بادغیس': 'badghis', 'نیمروز': 'nimroz', 'فراه': 'farah',
+  'زابل': 'zabul', 'ارزگان': 'uruzgan', 'پکتیا': 'paktia',
+  'پکتیکا': 'paktika', 'خوست': 'khost', 'کنر': 'kunar',
+  'لغمان': 'laghman', 'لوگر': 'logar', 'میدان وردک': 'maidan-wardak',
+  'نورستان': 'nuristan', 'سمنگان': 'samangan', 'تخار': 'takhar',
+  'بدخشان': 'badakhshan',
+};
+
+export const provFromSlug = (s) =>
+  PROVS.find((p) => PROV_SLUGS[p] === s) || '';
+
 
 export const FILTER_CSS = `
 .flt{background:var(--bg);box-shadow:var(--out);border-radius:20px;
