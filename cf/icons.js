@@ -1,6 +1,6 @@
 /**
  * @file cf/icons.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-30
  * Categories and SVG icons (same set as the Mini App).
  */
@@ -59,6 +59,10 @@ const I = {
     + '<path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/>',
   chat: '<path d="M20.5 12a8.5 8.5 0 0 1-12.2 7.6L3.5 20.5l1-4.5A8.5 8.5'
     + ' 0 1 1 20.5 12z"/>',
+  star: '<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7'
+    + ' 1-5.9-4.3-4.1 5.9-.8z"/>',
+  user: '<circle cx="12" cy="8" r="4"/>'
+    + '<path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>',
   store: '<path d="M3 9l2-5h14l2 5M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0'
     + ' 0 6 0 3 3 0 0 0 6 0M5 12v8h14v-8"/>',
 };
