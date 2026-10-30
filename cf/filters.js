@@ -1,11 +1,11 @@
 /**
  * @file cf/filters.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-30
- * Province + price filter box and active-filter chips for list pages.
+ * Province, price, deal and condition filter box + active chips.
  */
 import { ic } from './icons.js';
-import { esc } from './theme.js';
+import { esc, DEALS, CONDS } from './theme.js';
 
 export const PROVS = [
   'کابل', 'هرات', 'بلخ', 'قندهار', 'ننگرهار', 'کندز', 'بغلان', 'غزنی',
@@ -40,10 +40,10 @@ border-radius:99px;padding:5px 11px;font-size:12px}`;
 export const hidden = (o) => Object.keys(o).filter((k) => o[k]).map((k) =>
   `<input type="hidden" name="${k}" value="${esc(o[k])}">`).join('');
 
-// o: { base, province, minPrice, maxPrice, keep, reset }
+// o: { base, province, minPrice, maxPrice, deal, cond, keep, reset }
 // keep = fields to carry through (q, sort); reset = clear-all link.
 export function filterBox(o) {
-  const on = o.province || o.minPrice || o.maxPrice;
+  const on = o.province || o.minPrice || o.maxPrice || o.deal || o.cond;
   const opts = ['<option value="">همه ولایت‌ها</option>']
     .concat(PROVS.map((p) =>
       `<option${p === o.province ? ' selected' : ''}>${esc(p)}</option>`))
@@ -51,13 +51,21 @@ export function filterBox(o) {
   const num = (name, label, v) => `<label>${label}`
     + `<input name="${name}" inputmode="numeric" maxlength="12" `
     + `value="${esc(v)}"></label>`;
+  const pick = (name, label, map, cur) => `<label>${label}`
+    + `<select name="${name}"><option value="">همه</option>`
+    + Object.keys(map).map((k) => `<option value="${k}"`
+      + `${k === cur ? ' selected' : ''}>${map[k]}</option>`).join('')
+    + '</select></label>';
   return `<details class="flt"${on ? ' open' : ''}>`
-    + `<summary>${ic('pin')}فیلتر ولایت و قیمت</summary>`
+    + `<summary>${ic('pin')}فیلتر ولایت، قیمت و معامله</summary>`
     + `<form action="${esc(o.base)}" method="get">${hidden(o.keep)}`
     + `<label>ولایت<select name="province">${opts}</select></label>`
     + '<div class="two">'
     + num('minPrice', 'از قیمت (افغانی)', o.minPrice)
     + num('maxPrice', 'تا قیمت (افغانی)', o.maxPrice)
+    + '</div><div class="two">'
+    + pick('deal', 'نوع معامله', DEALS, o.deal)
+    + pick('cond', 'وضعیت', CONDS, o.cond)
     + '</div><div class="acts"><button>اعمال فیلتر</button>'
     + `<a class="rst" href="${esc(o.reset)}">پاک کردن</a></div>`
     + '</form></details>';
