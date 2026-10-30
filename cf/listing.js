@@ -12,7 +12,7 @@ import {
   shell, esc, fa, money, loc, ago, DEALS, CONDS,
 } from './theme.js';
 import {
-  PROVS, FILTER_CSS, filterBox, chips, hidden,
+    PROVS, PROV_SLUGS, FILTER_CSS, filterBox, chips, hidden,
 } from './filters.js';
 
 const SORT_NAMES = { new: 'جدیدترین', cheap: 'ارزان‌ترین', exp: 'گران‌ترین' };
@@ -64,7 +64,9 @@ function catGrid(category) {
   }).join('') + '</div>';
 }
 
-export async function renderListing({ request, env, category }) {
+export async function renderListing({
+  request, env, category, province: fixed = '',
+}) {
   const url = new URL(request.url);
   const site = String(env.SITE_URL || url.origin).replace(/\/+$/, '');
 
@@ -80,7 +82,8 @@ export async function renderListing({ request, env, category }) {
   const get = (k) => url.searchParams.get(k) || '';
   const q = get('q').trim().slice(0, 60);
   const sort = SORTS[get('sort')] ? get('sort') : 'new';
-  const province = PROVS.includes(get('province')) ? get('province') : '';
+  const province = fixed
+    || (PROVS.includes(get('province')) ? get('province') : '');
   const minPrice = num(get('minPrice'));
   const maxPrice = num(get('maxPrice'));
   const deal = DEALS[get('deal')] ? get('deal') : '';
@@ -88,27 +91,35 @@ export async function renderListing({ request, env, category }) {
   const sp = new URLSearchParams({
     q, sort, province, minPrice, maxPrice, deal, cond, page: get('page'),
   });
-  const base = category ? `/c/${category}` : '/ads';
+  const base = fixed ? `/p/${PROV_SLUGS[fixed]}`
+    : (category ? `/c/${category}` : '/ads');
   const { rows, total, pages, page } = await searchAds(env, sp, category);
 
-  const flt = { province, minPrice, maxPrice, deal, cond };
+  const flt = {
+    province: fixed ? '' : province, minPrice, maxPrice, deal, cond,
+  };
   const sortKey = sort === 'new' ? '' : sort;
   const keep = { q, sort: sortKey, ...flt };
   const plain = !q && !sortKey && !Object.values(flt).some(Boolean);
   const name = catName(category);
   const h1 = q ? `نتیجهٔ جستجو برای «${q}»`
-    : (category ? `آگهی‌های ${name}` : 'همهٔ آگهی‌ها');
+    : (fixed ? `آگهی‌های ${fixed}`
+      : (category ? `آگهی‌های ${name}` : 'همهٔ آگهی‌ها'));
   const suffix = page > 1 ? ` - صفحهٔ ${fa(page)}` : '';
-  const title = `${h1} در افغانستان${suffix} | پیدا`;
+  const title = fixed ? `${h1}${suffix} | پیدا`
+    : `${h1} در افغانستان${suffix} | پیدا`;
   const what = category ? 'در دستهٔ ' + name : 'نیازمندی';
-  const desc = `${fa(total)} آگهی ${what} در افغانستان. `
-    + 'خرید و فروش موتر، خانه، موبایل و بیشتر در پیدا.';
+  const desc = fixed
+    ? `${fa(total)} آگهی در ${fixed} افغانستان. خرید و فروش موتر، `
+      + `خانه، موبایل و بیشتر در ${fixed}.`
+    : `${fa(total)} آگهی ${what} در افغانستان. `
+      + 'خرید و فروش موتر، خانه، موبایل و بیشتر در پیدا.';
   const pg = page > 1 ? page : '';
   const canon = site + (plain ? href(base, { page: pg }) : base);
 
   const off = (k) => href(base, { ...keep, [k]: '' });
   const used = [];
-  if (province) used.push([province, off('province')]);
+  if (province && !fixed) used.push([province, off('province')]);
   if (minPrice) used.push(['از ' + money(minPrice), off('minPrice')]);
   if (maxPrice) used.push(['تا ' + money(maxPrice), off('maxPrice')]);
   if (deal) used.push([DEALS[deal], off('deal')]);
@@ -130,13 +141,20 @@ export async function renderListing({ request, env, category }) {
     : '';
 
   const box = filterBox({
-    base, ...flt, keep: { q, sort: sortKey }, reset: href(base, { q }),
+    base: fixed ? '/ads' : base, ...flt, province,
+    closed: !!fixed, keep: { q, sort: sortKey }, reset: href(base, { q }),
   });
+  const foot = plain && !category && !fixed
+    ? '<h2 class="mt">آگهی‌ها به تفکیک ولایت</h2><div class="chips">'
+      + PROVS.map((p) => `<a class="chip" href="/p/${PROV_SLUGS[p]}">`
+        + `${esc(p)}</a>`).join('') + '</div>'
+    : '';
   const body = catGrid(category) + box + chips(used)
     + `<h1>${esc(h1)} <span class="mt">(${fa(total)})</span></h1>${seg}`
     + (total
       ? `<div class="grid">${rows.map(card).join('')}</div>${pager}`
-      : `<div class="empty">${ic('search')}آگهی‌ای پیدا نشد</div>`);
+      : `<div class="empty">${ic('search')}آگهی‌ای پیدا نشد</div>`)
+    + foot;
 
   return shell({
     title, desc, canon, body, q, action: base, css: FILTER_CSS,
