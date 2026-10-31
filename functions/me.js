@@ -1,6 +1,6 @@
 /**
  * @file functions/me.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-31
  * GET /me - the signed-in user's page (private, never cached).
  */
@@ -33,6 +33,6 @@ ${ic('chat')}باز کردن ربات</a></div>
   return shell({
     title: 'حساب من | پیدا', desc: 'حساب کاربری', body, css: CSS,
     canon: site + '/me', robots: 'noindex, nofollow', compact: true,
-    tab: '', cache: 'no-store',
+    tab: 'me', cache: 'no-store',
   });
 }
