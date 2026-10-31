@@ -1,6 +1,6 @@
 /**
  * @file cf/listing.js
- * @version 4.2.0
+ * @version 4.3.0
  * @updated 2026-10-30
  * Server-rendered list pages: /, /ads, /c/<cat>, /p/<prov>, /shop/<name>
  * with search, sort, filters and the category grid (Mini App look).
@@ -33,7 +33,7 @@ const num = (v) => {
   return n && n > 0 ? String(n) : '';
 };
 
-function card(r) {
+export function card(r) {
   const has = parseList(r.photos).length > 0;
   const tags = [];
   const tag = (t, c) => tags.push(`<span class="tg${c || ''}">${t}</span>`);
