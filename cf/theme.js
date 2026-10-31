@@ -1,11 +1,12 @@
 /**
  * @file cf/theme.js
- * @version 2.3.0
+ * @version 2.4.0
  * @updated 2026-10-31
  * Page shell (top bar, bottom menu like the Mini App) and helpers.
  */
 import { SPRITE, ic } from './icons.js';
 import { CSS } from './style.js';
+import { LOGO, LOGO_CSS } from './logo.js';
 import { SOCIAL } from './social.js';
 
 export const BOT = 'PEYDA_YaarBot';
@@ -48,20 +49,17 @@ function socials() {
     .join('') + '</div>' : '';
 }
 
-// Same 5 items as the Mini App menu. "Me" opens the site account page
-// (/me sends signed-out users to /login), "saved" opens /saved. Chats
-// still open the bot until they exist on the site.
+// Menu: home, the Telegram channel, "+" (how to post an ad: /post),
+// saved (/saved) and "me" (/me sends signed-out users to /login).
 function bottomNav(tab) {
-  const tg = `https://t.me/${BOT}`;
   const item = (href, icon, label, on) => `<a href="${href}"`
     + (on ? ' class="on" aria-current="page"' : '')
-    + (href === tg ? ' rel="nofollow noopener"' : '')
+    + (/^https?:/.test(href) ? ' rel="nofollow noopener"' : '')
     + `>${ic(icon)}${label}</a>`;
   return '<nav class="bnav" aria-label="منوی اصلی"><div>'
     + item('/', 'home', 'خانه', tab === 'home')
-    + item(tg, 'chat', 'گفتگو')
-    + `<a class="fab" href="${tg}" rel="nofollow noopener" `
-    + `aria-label="ثبت آگهی">${ic('plus')}</a>`
+    + item(SOCIAL.channel || '/about', 'send', 'کانال')
+    + `<a class="fab" href="/post" aria-label="ثبت آگهی">${ic('plus')}</a>`
     + item('/saved', 'star', 'نشان‌شده', tab === 'saved')
     + item('/me', 'user', 'من', tab === 'me')
     + '</div></nav>';
@@ -100,9 +98,11 @@ content="-EYHx7NDg4qhC3CWp0vYSDhnFMLv60tMHGlqbd01LNs">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="${esc(FONT)}" rel="stylesheet">
-${o.head || ''}<style>${CSS}${o.css || ''}</style></head><body>${SPRITE}
-<header class="top"><div><a class="logo" href="/">پیدا
-<small>بازار آنلاین نیازمندی‌های افغانستان</small></a>${search}</div>
+${o.head || ''}<style>${CSS}${LOGO_CSS}${o.css || ''}</style>
+</head><body>${SPRITE}
+<header class="top"><div><a class="logo" href="/"><span class="lt">پیدا
+<small>بازار آنلاین نیازمندی‌های افغانستان</small></span>
+${LOGO}</a>${search}</div>
 </header>
 <main>${o.body}</main>
 <footer class="foot">${socials()}<a href="/about">دربارهٔ پیدا و راهنما</a>
