@@ -1,10 +1,11 @@
 /**
  * @file functions/ad/[id].js
- * @version 2.2.0
+ * @version 2.3.0
  * @updated 2026-10-30
  * GET /ad/12 - server-rendered ad page (HTML, meta tags, JSON-LD).
  */
 import { PROV_SLUGS } from '../../cf/filters.js';
+import { LB_CSS, LB_JS } from '../../cf/lightbox.js';
 import { toInt, parseList } from '../../cf/lib.js';
 import { catName, ic } from '../../cf/icons.js';
 import {
@@ -114,10 +115,13 @@ export async function onRequestGet({ request, env, params }) {
     + jsonLd(r, canon, imgs, cat, sold);
 
   const gal = count
-    ? '<div class="gal">' + idx.map((i) =>
-      `<img src="/api/img?id=${r.id}&i=${i}" `
-      + `alt="${esc(r.title)} - ${fa(i + 1)}"`
-      + `${i ? ' loading="lazy"' : ''}>`).join('') + '</div>'
+    ? '<div class="gal">' + idx.map((i) => {
+      const src = `/api/img?id=${r.id}&i=${i}`;
+      const alt = `${esc(r.title)} - ${fa(i + 1)}`;
+      return `<a href="${src}" aria-label="${alt}">`
+        + `<img src="${src}" alt="${alt}"`
+        + `${i ? ' loading="lazy"' : ''}></a>`;
+    }).join('') + '</div>'
     : '';
 
   const ps = PROV_SLUGS[r.province];
@@ -140,10 +144,11 @@ ${r.created ? `<div class="mt">${ago(r.created)}</div>` : ''}</div>
 <a class="btn" href="https://t.me/${BOT}?start=ad_${r.id}" rel="nofollow">
 ${ic('chat')}تماس و گفتگو در تلگرام</a>
 <a class="btn alt" href="/ads">${ic('search')}همهٔ آگهی‌ها</a></div>
-${more}</article>`;
+${more}</article>${count ? `<script>${LB_JS}</script>` : ''}`;
 
   return shell({
     title: `${r.title}${where ? ' - ' + where : ''} | پیدا`,
     desc, canon, robots: 'index, follow', body, head, compact: true,
+    css: count ? LB_CSS : '',
   });
 }
