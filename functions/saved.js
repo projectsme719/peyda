@@ -1,11 +1,11 @@
 /**
  * @file functions/saved.js
- * @version 1.0.0
+ * @version 1.0.1
  * @updated 2026-10-31
  * GET /saved - the signed-in user's saved ads (copy sent by the bot).
  */
 import { toInt } from '../cf/lib.js';
-import { sessionUser, redirect } from '../cf/auth.js';
+import { sessionUser, redirect, loginUrl } from '../cf/auth.js';
 import { minePage, PER_PAGE } from '../cf/mine.js';
 
 const COLS = 'a.id, a.title, a.price, a.province, a.city, a.cond, a.deal, '
@@ -15,7 +15,7 @@ const FROM = ' FROM bookmarks b JOIN ads a ON a.id = b.ad_id '
 
 export async function onRequestGet({ request, env }) {
   const u = await sessionUser(request, env);
-  if (!u) return redirect('/login');
+  if (!u) return redirect(loginUrl('/saved'));
   const want = toInt(new URL(request.url).searchParams.get('page')) || 1;
   const o = {
     request, env, title: 'نشان‌شده‌ها', base: '/saved', tab: 'saved',
