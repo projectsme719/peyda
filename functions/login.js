@@ -1,6 +1,6 @@
 /**
  * @file functions/login.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-31
  * GET/POST /login - sign in with a one-time code sent by the Telegram bot.
  * Step 1: start (nonce cookie + bot link). Step 2: type the 6-digit code.
@@ -55,7 +55,7 @@ function page(request, env, body, o = {}) {
   const res = shell({
     title: 'ورود | پیدا', desc: 'ورود با حساب تلگرام', body,
     canon: site + '/login', robots: 'noindex, nofollow', compact: true,
-    tab: '', cache: 'no-store', css: CSS, status: o.status || 200,
+    tab: 'me', cache: 'no-store', css: CSS, status: o.status || 200,
   });
   (o.cookies || []).forEach((c) => res.headers.append('set-cookie', c));
   return res;
