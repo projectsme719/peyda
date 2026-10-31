@@ -1,9 +1,10 @@
 /**
  * @file functions/api/sync.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-29
  * POST /api/sync - the bot sends ads here (upsert or delete).
  * Needs the x-sync-key header (secret SYNC_KEY).
+ * 1.1.0: also stores the owner (Telegram id) for the "my ads" page.
  */
 import {
   json, fail, authed, readJson, toInt, normalize,
@@ -15,13 +16,14 @@ const str = (v, max) => String(v ?? '').slice(0, max);
 const UPSERT =
   'INSERT INTO ads (id, category, title, description, price, province, ' +
   'city, cond, deal, attrs, photos, thumbs, status, shop, shop_name, ' +
-  'contact, search, created, updated) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ' +
-  '?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19) ' +
+  'contact, search, created, updated, owner_tg) VALUES (?1, ?2, ?3, ?4, ' +
+  '?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ' +
+  '?20) ' +
   'ON CONFLICT(id) DO UPDATE SET category = ?2, title = ?3, ' +
   'description = ?4, price = ?5, province = ?6, city = ?7, cond = ?8, ' +
   'deal = ?9, attrs = ?10, photos = ?11, thumbs = ?12, status = ?13, ' +
   'shop = ?14, shop_name = ?15, contact = ?16, search = ?17, ' +
-  'created = ?18, updated = ?19';
+  'created = ?18, updated = ?19, owner_tg = COALESCE(?20, owner_tg)';
 
 function list(v, max) {
   return Array.isArray(v) ? v.slice(0, 5).map((x) => str(x, max)) : [];
@@ -64,6 +66,7 @@ function clean(a) {
     normalize(`${title} ${description}`).slice(0, 1600),
     toInt(a.created) || now,
     now,
+    toInt(a.owner) > 0 ? toInt(a.owner) : null,
   ];
 }
 
