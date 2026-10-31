@@ -1,6 +1,6 @@
 /**
  * @file cf/theme.js
- * @version 2.2.0
+ * @version 2.3.0
  * @updated 2026-10-31
  * Page shell (top bar, bottom menu like the Mini App) and helpers.
  */
@@ -49,8 +49,8 @@ function socials() {
 }
 
 // Same 5 items as the Mini App menu. "Me" opens the site account page
-// (/me sends signed-out users to /login). Chats and saved still open
-// the bot until they exist on the site.
+// (/me sends signed-out users to /login), "saved" opens /saved. Chats
+// still open the bot until they exist on the site.
 function bottomNav(tab) {
   const tg = `https://t.me/${BOT}`;
   const item = (href, icon, label, on) => `<a href="${href}"`
@@ -62,14 +62,14 @@ function bottomNav(tab) {
     + item(tg, 'chat', 'گفتگو')
     + `<a class="fab" href="${tg}" rel="nofollow noopener" `
     + `aria-label="ثبت آگهی">${ic('plus')}</a>`
-    + item(tg, 'star', 'نشان‌شده')
+    + item('/saved', 'star', 'نشان‌شده', tab === 'saved')
     + item('/me', 'user', 'من', tab === 'me')
     + '</div></nav>';
 }
 
 // o: { title, desc, canon, robots, body, head, q, action, compact,
 //      status, cache, css (extra), hidden (extra search inputs),
-//      tab ('home' by default; 'me'; '' = no active menu item) }
+//      tab ('home' by default; 'me', 'saved'; '' = none active) }
 export function shell(o) {
   const search = o.compact ? '' : `<form class="search" `
     + `action="${esc(o.action || '/ads')}" method="get">`
