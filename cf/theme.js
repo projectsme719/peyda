@@ -1,0 +1,120 @@
+/**
+ * @file cf/theme.js
+ * @version 2.4.0
+ * @updated 2026-10-31
+ * Page shell (top bar, bottom menu like the Mini App) and helpers.
+ */
+import { SPRITE, ic } from './icons.js';
+import { CSS } from './style.js';
+import { LOGO, LOGO_CSS } from './logo.js';
+import { SOCIAL } from './social.js';
+
+export const BOT = 'PEYDA_YaarBot';
+export const DEALS = {
+  sale: 'فروشی', exchange: 'معاوضه', rent: 'کرایه', mortgage: 'گروی',
+};
+export const CONDS = { new: 'جدید', used: 'مستعمل' };
+
+export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+export const fa = (s) => String(s).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+export const money = (p) => (p == null ? 'توافقی'
+  : fa(String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) + ' افغانی');
+export const loc = (r) => [r.province, r.city].filter(Boolean).join('، ');
+
+// Unix seconds -> "۲ ساعت پیش" (pages are cached, so it can be a bit old).
+export const ago = (t) => {
+  if (!t) return '';
+  const s = Math.max(0, Math.floor(Date.now() / 1000) - t);
+  if (s < 60) return 'همین الان';
+  if (s < 3600) return fa(Math.floor(s / 60)) + ' دقیقه پیش';
+  if (s < 86400) return fa(Math.floor(s / 3600)) + ' ساعت پیش';
+  return fa(Math.floor(s / 86400)) + ' روز پیش';
+};
+
+const FONT = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;'
+  + '700&family=Vazirmatn:wght@400;500;700;800&display=swap';
+
+// Social pages / support contacts; entries left empty in social.js are hidden.
+function socials() {
+  const wa = String(SOCIAL.whatsapp || '').replace(/\D/g, '');
+  const list = [
+    ['facebook', 'فیسبوک', SOCIAL.facebook],
+    ['instagram', 'اینستاگرام', SOCIAL.instagram],
+    ['mail', 'ایمیل پشتیبانی', SOCIAL.email && 'mailto:' + SOCIAL.email],
+    ['call', 'واتساپ', wa && 'https://wa.me/' + wa],
+  ].filter((x) => x[2]);
+  return list.length ? '<div class="soc">' + list.map(([i, t, h]) =>
+    `<a href="${esc(h)}" rel="noopener nofollow">${ic(i)}${t}</a>`)
+    .join('') + '</div>' : '';
+}
+
+// Menu: home, the Telegram channel, "+" (how to post an ad: /post),
+// saved (/saved) and "me" (/me sends signed-out users to /login).
+function bottomNav(tab) {
+  const item = (href, icon, label, on) => `<a href="${href}"`
+    + (on ? ' class="on" aria-current="page"' : '')
+    + (/^https?:/.test(href) ? ' rel="nofollow noopener"' : '')
+    + `>${ic(icon)}${label}</a>`;
+  return '<nav class="bnav" aria-label="منوی اصلی"><div>'
+    + item('/', 'home', 'خانه', tab === 'home')
+    + item(SOCIAL.channel || '/about', 'send', 'کانال')
+    + `<a class="fab" href="/post" aria-label="ثبت آگهی">${ic('plus')}</a>`
+    + item('/saved', 'star', 'نشان‌شده', tab === 'saved')
+    + item('/me', 'user', 'من', tab === 'me')
+    + '</div></nav>';
+}
+
+// o: { title, desc, canon, robots, body, head, q, action, compact,
+//      status, cache, css (extra), hidden (extra search inputs),
+//      tab ('home' by default; 'me', 'saved'; '' = none active) }
+export function shell(o) {
+  const search = o.compact ? '' : `<form class="search" `
+    + `action="${esc(o.action || '/ads')}" method="get">`
+    + (o.hidden || '')
+    + `<input name="q" type="search" value="${esc(o.q || '')}" `
+    + 'placeholder="جستجو در آگهی‌ها…" maxlength="60">'
+    + `<button>${ic('search')}جستجو</button></form>`;
+  const tab = o.tab === undefined ? 'home' : o.tab;
+
+  const html = `<!doctype html><html lang="fa" dir="rtl"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff"
+media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171717"
+media="(prefers-color-scheme: dark)">
+<meta name="google-site-verification"
+content="-EYHx7NDg4qhC3CWp0vYSDhnFMLv60tMHGlqbd01LNs">
+<title>${esc(o.title)}</title>
+<meta name="description" content="${esc(o.desc)}">
+<meta name="robots" content="${o.robots}">
+<link rel="canonical" href="${esc(o.canon)}">
+<meta property="og:title" content="${esc(o.title)}">
+<meta property="og:description" content="${esc(o.desc)}">
+<meta property="og:url" content="${esc(o.canon)}">
+<meta property="og:locale" content="fa_AF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="${esc(FONT)}" rel="stylesheet">
+${o.head || ''}<style>${CSS}${LOGO_CSS}${o.css || ''}</style>
+</head><body>${SPRITE}
+<header class="top"><div><a class="logo" href="/"><span class="lt">پیدا
+<small>بازار آنلاین نیازمندی‌های افغانستان</small></span>
+${LOGO}</a>${search}</div>
+</header>
+<main>${o.body}</main>
+<footer class="foot">${socials()}<a href="/about">دربارهٔ پیدا و راهنما</a>
+</footer>
+${bottomNav(tab)}
+</body></html>`;
+
+  return new Response(html, {
+    status: o.status || 200,
+    headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': o.cache || 'public, max-age=300, s-maxage=600',
+    },
+  });
+}
