@@ -1,6 +1,6 @@
 /**
  * @file functions/me.js
- * @version 1.1.0
+ * @version 1.2.0
  * @updated 2026-10-31
  * GET /me - the signed-in user's page (private, never cached).
  */
@@ -22,9 +22,12 @@ export async function onRequestGet({ request, env }) {
 ${esc(u.name || 'کاربر پیدا')}</h1>
 ${u.username ? `<p class="mt" dir="ltr">@${esc(u.username)}</p>` : ''}
 <p>شما با حساب تلگرام وارد شده‌اید.</p></div>
-<div class="box me"><h2>به‌زودی در سایت</h2>
-<p>آگهی‌های من، نشان‌شده‌ها، ثبت آگهی و گفتگو فعلاً در ربات و Mini App
-انجام می‌شود و مرحله‌به‌مرحله به سایت اضافه می‌شود.</p>
+<div class="box me"><a class="btn" href="/my-ads">${ic('grid')}
+آگهی‌های من</a>
+<a class="btn" href="/saved">${ic('star')}نشان‌شده‌ها</a></div>
+<div class="box me"><h2>در ربات</h2>
+<p>ثبت آگهی، گفتگو و تغییر آگهی‌ها فعلاً در ربات و Mini App انجام
+می‌شود.</p>
 <a class="btn alt" rel="nofollow noopener" href="https://t.me/${BOT}">
 ${ic('chat')}باز کردن ربات</a></div>
 <form class="me" method="post" action="/logout">
