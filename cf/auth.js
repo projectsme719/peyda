@@ -1,18 +1,25 @@
 /**
  * @file cf/auth.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-31
  * Login helpers: random tokens, hashing, cookies and session lookup.
  * (This file is not a route.)
  */
 export const SESSION_COOKIE = '__Host-ps';
 export const NONCE_COOKIE = '__Host-pn';
+export const NEXT_COOKIE = '__Host-pnx';
 export const SESSION_DAYS = 30;
 export const NONCE_TTL = 600;
 export const CODE_TTL = 300;
 export const MAX_TRIES = 5;
 
 const enc = new TextEncoder();
+
+// Pages a signed-out user can be sent back to after login. Exact paths
+// only, so /login?next=... can never redirect to another site.
+const NEXT_OK = ['/me', '/saved', '/my-ads'];
+export const safeNext = (v) => (NEXT_OK.includes(String(v || '')) ? v : '');
+export const loginUrl = (to) => '/login?next=' + encodeURIComponent(to);
 export const now = () => Math.floor(Date.now() / 1000);
 
 // URL-safe random text. 16 bytes -> 22 chars, 24 bytes -> 32 chars.
