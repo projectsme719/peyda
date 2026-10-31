@@ -1,15 +1,17 @@
 /**
  * @file functions/login.js
- * @version 1.1.0
+ * @version 1.2.0
  * @updated 2026-10-31
  * GET/POST /login - sign in with a one-time code sent by the Telegram bot.
  * Step 1: start (nonce cookie + bot link). Step 2: type the 6-digit code.
+ * /login?next=/saved sends the user back to that page after login.
  */
 import { rateLimit, normalize } from '../cf/lib.js';
 import { ic } from '../cf/icons.js';
 import { shell, esc, fa, BOT } from '../cf/theme.js';
 import {
-  NONCE_COOKIE, SESSION_COOKIE, SESSION_DAYS, NONCE_TTL, MAX_TRIES,
+  NONCE_COOKIE, NEXT_COOKIE, SESSION_COOKIE, SESSION_DAYS, NONCE_TTL,
+  MAX_TRIES, safeNext,
   now, randomToken, getCookie, cookie, redirect, codeHash, same,
   createSession, sessionUser,
 } from '../cf/auth.js';
@@ -149,8 +151,9 @@ async function verify(request, env, form) {
       + 'name = ?2, username = ?3, last_login = ?4',
     ).bind(r.tg_id, r.name, r.username, t).run();
     const token = await createSession(env, r.tg_id);
-    return redirect('/me', [
+    return redirect(safeNext(getCookie(request, NEXT_COOKIE)) || '/me', [
       cookie(SESSION_COOKIE, token, SESSION_DAYS * 86400), clearNonce(),
+      cookie(NEXT_COOKIE, '', 0),
     ]);
   } catch (e) {
     console.error('login verify failed');
@@ -159,8 +162,12 @@ async function verify(request, env, form) {
 }
 
 export async function onRequestGet({ request, env }) {
-  if (await sessionUser(request, env)) return redirect('/me');
-  return page(request, env, step1(''));
+  const next = safeNext(new URL(request.url).searchParams.get('next'));
+  if (await sessionUser(request, env)) return redirect(next || '/me');
+  // Remember where to go after login (or forget an old destination).
+  return page(request, env, step1(''), {
+    cookies: [cookie(NEXT_COOKIE, next, next ? NONCE_TTL : 0)],
+  });
 }
 
 export async function onRequestPost({ request, env }) {
