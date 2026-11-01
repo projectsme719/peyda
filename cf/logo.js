@@ -1,6 +1,6 @@
 /**
  * @file cf/logo.js
- * @version 1.0.0
+ * @version 1.1.0
  * @updated 2026-10-31
  * Animated Peyda logo: inline SVG that follows the text color (dark in
  * the light theme, white in the dark theme) and its CSS. The shapes were
@@ -62,6 +62,10 @@ const P = {
   ].join(''),
 };
 
+// Plain shapes (no animation), used to draw the favicon.
+export const PATHS = [P.frame, P.house, P.hl1, P.hl2, P.car, P.cl1, P.cl2];
+export const LOGO_BOX = [1225, 1260];
+
 export const LOGO = '<svg class="lgo" viewBox="0 0 1225 1260" '
   + 'aria-hidden="true" focusable="false">'
   + '<g fill="currentColor" fill-rule="evenodd">'
@@ -78,7 +82,8 @@ export const LOGO = '<svg class="lgo" viewBox="0 0 1225 1260" '
 // in turn. Nothing moves for people who ask for reduced motion.
 export const LOGO_CSS = `.logo{display:flex;align-items:center;gap:10px}
 .logo .lt{display:block}
-.lgo{width:46px;height:46px;flex:none;overflow:visible}
+.lgo{width:46px;height:46px;flex:none;overflow:visible;
+margin-inline-start:auto}
 .lgo *{transform-box:fill-box;transform-origin:center}
 .lg-f{animation:lgf .7s ease-out both}
 .lg-i{animation:lgi .6s cubic-bezier(.3,1.6,.5,1) .35s both,
