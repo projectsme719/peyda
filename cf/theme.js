@@ -1,6 +1,6 @@
 /**
  * @file cf/theme.js
- * @version 2.4.0
+ * @version 2.5.0
  * @updated 2026-10-31
  * Page shell (top bar, bottom menu like the Mini App) and helpers.
  */
@@ -87,6 +87,12 @@ media="(prefers-color-scheme: light)">
 media="(prefers-color-scheme: dark)">
 <meta name="google-site-verification"
 content="-EYHx7NDg4qhC3CWp0vYSDhnFMLv60tMHGlqbd01LNs">
+<link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/icons/48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/icons/192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="application-name" content="پیدا">
+<meta name="apple-mobile-web-app-title" content="پیدا">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
 <meta name="robots" content="${o.robots}">
