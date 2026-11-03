@@ -1,0 +1,178 @@
+/**
+ * @file web/css/5-profile.css
+ * @version 13.0.0
+ * @updated 2026-11-03
+ * Mini App styles: profile, post-ad form, my ads, status dots.
+ * Loaded in numeric order (the order matters).
+ */
+
+.me {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.me .av {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  display: grid;
+  place-items: center;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 30px;
+}
+
+.sec {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.sec .sh {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.sec .sh b {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.sec .cats {
+  margin-bottom: 0;
+}
+
+.sec .seg {
+  border-bottom: 0;
+  gap: 8px;
+  margin: 0;
+}
+
+.sec .seg button {
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--card);
+  color: var(--foreground);
+  flex: 1;
+}
+
+.sec .seg button.on {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.thumbs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.th {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  border-radius: 12px;
+  background: var(--muted) center/cover no-repeat;
+  border: 1px solid var(--border);
+}
+
+.th b {
+  position: absolute;
+  top: -7px;
+  inset-inline-end: -7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--destructive);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+
+.th b .ic {
+  width: 13px;
+  height: 13px;
+}
+
+.addph {
+  width: 74px;
+  height: 74px;
+  border: 1px dashed var(--ring);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--foreground);
+  background: var(--background);
+  font-size: 26px;
+}
+
+.act {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 0;
+}
+
+.mini {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 10px;
+  min-height: 36px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.mini:active {
+  opacity: .8;
+}
+
+.st {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.st i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted-foreground);
+  display: inline-block;
+}
+
+.st.active i {
+  background: var(--ok);
+}
+
+.st.sold i {
+  background: var(--destructive);
+}
+
+.st.pending i, .st.hidden i {
+  background: var(--amber);
+}
