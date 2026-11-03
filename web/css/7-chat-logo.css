@@ -1,0 +1,128 @@
+/**
+ * @file web/css/7-chat-logo.css
+ * @version 13.0.0
+ * @updated 2026-11-03
+ * Mini App styles: send button, search-engine links, animated logo.
+ * Loaded in numeric order (the order matters).
+ */
+
+.send {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.send .ic {
+  transform: scaleX(-1);
+}
+
+.cblock {
+  flex: 1;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#seo {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 6px 14px 100px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 2.2;
+  color: var(--muted-foreground);
+}
+
+#seo a {
+  color: var(--foreground);
+  margin: 0 6px;
+  white-space: nowrap;
+  text-decoration: underline;
+}
+
+.lgo {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  overflow: visible;
+  margin-inline-start: auto;
+}
+
+.lgo * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lg-f {
+  animation: lgf .7s ease-out both;
+}
+
+.lg-i {
+  animation: lgi .6s cubic-bezier(.3,1.6,.5,1) .35s both,
+    lgp 8s ease-in-out 3s infinite;
+}
+
+.lg-b {
+  animation: lgi .6s cubic-bezier(.3,1.6,.5,1) .5s both,
+    lgp 8s ease-in-out 7s infinite;
+}
+
+.lg-l {
+  animation: lgl .5s ease-out .7s both;
+}
+
+.lg-2, .lg-4 {
+  animation-delay: .85s;
+}
+
+.lg-3 {
+  animation-delay: .8s;
+}
+
+@keyframes lgf {
+  from {
+    opacity: 0;
+    transform: translateY(-12%) scale(.92);
+  }
+}
+
+@keyframes lgi {
+  from {
+    opacity: 0;
+    transform: scale(.2);
+  }
+}
+
+@keyframes lgl {
+  from {
+    opacity: 0;
+    transform: translateX(-25%);
+  }
+}
+
+@keyframes lgp {
+  0%, 8%, 100% {
+    transform: none;
+  }
+  4% {
+    transform: scale(1.2);
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  .lgo * {
+    animation: none;
+  }
+}
