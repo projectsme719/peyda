@@ -1,0 +1,233 @@
+/**
+ * @file web/css/6-chat.css
+ * @version 13.0.1
+ * @updated 2026-11-06
+ * Mini App styles: chat window (full-screen overlay) and chat list.
+ * Loaded in numeric order (the order matters): after 5-profile.css and
+ * before 7-chat-logo.css.
+ */
+
+/* ---------- پنجرهٔ گفتگو: تمام‌صفحه، روی آگهی ---------- */
+.chat {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  height: var(--tg-viewport-height, 100vh);
+  background: var(--background);
+  z-index: 40;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.chatbox {
+  max-width: 560px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+.chead {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 10px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.cx {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--muted);
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.cx:active {
+  opacity: .8;
+}
+
+.ct {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ct b {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ct small {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.msgs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--card);
+}
+
+.msgs .b {
+  max-width: 82%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* در صفحهٔ راست‌به‌چپ: پیام من سمت راست، پیام طرف مقابل سمت چپ */
+.msgs .b.me {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.msgs .b.they {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.msgs .bt {
+  padding: 9px 13px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msgs .b.me .bt {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-end-start-radius: 4px;
+}
+
+.msgs .b.they .bt {
+  background: var(--muted);
+  color: var(--foreground);
+  border-end-end-radius: 4px;
+}
+
+.msgs .tm {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  padding: 0 4px;
+}
+
+.cin {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  border-top: 1px solid var(--border);
+  background: var(--background);
+}
+
+.cin textarea {
+  flex: 1;
+  min-width: 0;
+  max-height: 120px;
+  resize: none;
+  border: 1px solid var(--border);
+  background: var(--input);
+  color: var(--foreground);
+  border-radius: 22px;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.cin textarea:focus {
+  border-color: var(--ring);
+}
+
+/* ---------- فهرست گفتگوها (تب «گفتگو») ---------- */
+.crow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.crow:active {
+  opacity: .8;
+}
+
+.cav {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  color: var(--muted-foreground);
+}
+
+.cmid {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmid b {
+  display: block;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmid .mt {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.cend {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.cend .mt {
+  margin-top: 0;
+}
+
+/* نشان تعداد نخوانده داخل ردیف گفتگو (نه روی نوار پایین) */
+.cend .bdg {
+  position: static;
+}
